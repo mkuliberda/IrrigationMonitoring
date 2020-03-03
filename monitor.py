@@ -1,4 +1,6 @@
 import nrf24l01_ext
 
-print nrf24l01_ext.greet()
+radio = nrf24l01_ext.nrf24l01()
+
+print(radio.greet())
 

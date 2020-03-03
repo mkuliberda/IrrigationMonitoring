@@ -1,7 +1,9 @@
-char const* greet()
-{
-       return "hello, world";
-}
+
+
+class nrf24l01{
+public:
+       char const* greet(){ return "hello, world";}
+};
 
 
 #include <boost/python.hpp>
@@ -9,6 +11,7 @@ char const* greet()
 BOOST_PYTHON_MODULE(nrf24l01_ext)
 {
        using namespace boost::python;
-          def("greet", greet);
+       class_<nrf24l01>("nrf24l01")
+              .def("greet", &nrf24l01::greet);
 }
 
