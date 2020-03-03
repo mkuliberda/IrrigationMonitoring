@@ -1,13 +1,14 @@
-#include <iostream>
-
-using namespace std;
-
-int main()
-
+char const* greet()
 {
-
-          cout << "Hello Raspberry Pi!" << endl;
-
-          return 0;
-
+       return "hello, world";
 }
+
+
+#include <boost/python.hpp>
+  
+BOOST_PYTHON_MODULE(nrf24l01_ext)
+{
+       using namespace boost::python;
+          def("greet", greet);
+}
+
