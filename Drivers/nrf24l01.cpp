@@ -1,4 +1,4 @@
-#include <nrf24l01.h>
+#include "nrf24l01.h"
 
 
 
@@ -22,9 +22,9 @@ void NRF24L01::Init(SPI_HandleTypeDef *_spi, const struct gpio_s & _ce, const st
 #else
 
 void NRF24L01::Init(const int & _spifd, const int & _csn, const int & _ce){
-	this->fd = _spifd;
-	this->csn = _csn;
-	this->ce = _ce;
+	//this->fd = _spifd;
+	//this->csn = _csn;
+	//this->ce = _ce;
 
 }
 #endif

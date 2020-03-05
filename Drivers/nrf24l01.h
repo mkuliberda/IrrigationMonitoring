@@ -27,8 +27,7 @@ IRQ			Not used	Interrupt pin. Goes low when active. Pin functionality is active,
  *
 */
 
-
-#include <communication_base.h>
+#include "communication_base.h"
 
 #ifndef RPI
 #include "stm32f3xx_hal.h"
@@ -37,17 +36,18 @@ IRQ			Not used	Interrupt pin. Goes low when active. Pin functionality is active,
 #include "main.h"
 
 #else
-#include <iostream>
-#include <errno.h>
-#include <wiringPiSPI.h>
-#include <unistd.h>
+//#include <iostream>
+//#include <errno.h>
+//#include "wiringPiSPI.h"
+//#include <unistd.h>
+#include "defines.h"
 #endif
 
 
 
 /* NRF24L01+ registers*/
 #define NRF24L01_REG_CONFIG			0x00	//Configuration Register
-#define NRF24L01_REG_EN_AA			0x01	//Enable ‘Auto Acknowledgment’ Function
+#define NRF24L01_REG_EN_AA			0x01	//Enable ï¿½Auto Acknowledgmentï¿½ Function
 #define NRF24L01_REG_EN_RXADDR		0x02	//Enabled RX Addresses
 #define NRF24L01_REG_SETUP_AW		0x03	//Setup of Address Widths (common for all data pipes)
 #define NRF24L01_REG_SETUP_RETR		0x04	//Setup of Automatic Retransmission

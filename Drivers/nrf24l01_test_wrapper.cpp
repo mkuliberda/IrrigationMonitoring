@@ -5,5 +5,7 @@ BOOST_PYTHON_MODULE(nrf24l01_ext)
 {
        using namespace boost::python;
        class_<nrf24l01>("nrf24l01")
-              .def("greet", &nrf24l01::greet);
+              .def("greet", &nrf24l01::greet)
+              .def("no_greet", &nrf24l01::no_greet)
+              ;
 }
