@@ -36,10 +36,8 @@ IRQ			Not used	Interrupt pin. Goes low when active. Pin functionality is active,
 #include "main.h"
 
 #else
-//#include <iostream>
-//#include <errno.h>
-//#include "wiringPiSPI.h"
-//#include <unistd.h>
+#include "wiringPi.h"
+#include "wiringPiSPI.h"
 #include "defines.h"
 #endif
 
@@ -282,8 +280,9 @@ private:
 	gpio_s							csn;
 	gpio_s							irq;
 #else
-	int								rpi_fd;
-	int								rpi_csn;
+	int								fd;
+	int								rpi_spidev = 0;		//spi device
+	int								rpi_spichan; 		//chip select
 	int								rpi_ce;
 	int								rpi_irq;
 #endif
@@ -315,7 +314,7 @@ public:
 	void 							Init(SPI_HandleTypeDef *_spi, const struct gpio_s & _ce, const struct gpio_s & _csn);
 	void 							Init(SPI_HandleTypeDef *_spi, const struct gpio_s & _ce, const struct gpio_s & _csn, const struct gpio_s & _irq);
 #else
-	void 							Init(const int & _spifd, const int & _csn, const int & _ce);
+	void 							Init(const int & _spidev, const int & _spichan, const int & _ce, const int & _irq);
 #endif
 	bool&	 						Config(const uint8_t & _payloadsize, const uint8_t & _channel, const NRF24L01_OutputPower_t & _outpwr, const NRF24L01_DataRate_t & _datarate);
 	bool 							SetRF(const NRF24L01_DataRate_t & _datarate, const NRF24L01_OutputPower_t & _outpwr);

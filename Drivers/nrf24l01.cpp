@@ -21,10 +21,22 @@ void NRF24L01::Init(SPI_HandleTypeDef *_spi, const struct gpio_s & _ce, const st
 
 #else
 
-void NRF24L01::Init(const int & _spifd, const int & _csn, const int & _ce){
-	//this->fd = _spifd;
-	//this->csn = _csn;
-	//this->ce = _ce;
+void NRF24L01::Init(const int & _spidev, const int & _spichan, const int & _ce, const int & _irq){
+	if(_spidev == 0){
+		if(_spichan == 0 || _spichan == 1){
+			this->rpi_spichan = _spichan;
+		}
+		else this->rpi_spichan = 0;
+	} else {
+		this->rpi_spidev = 0;
+		this->rpi_spichan = 0;
+	}
+	this->rpi_ce = _ce;
+	this->rpi_irq = _irq;
+	this->fd = wiringPiSPISetup(this->rpi_spichan, 500000); //TODO: wiringPi works only with SPI0
+	wiringPiSetup ();
+	pinMode(this->rpi_ce, OUTPUT);
+	pinMode(this->rpi_irq, INPUT);
 
 }
 #endif
@@ -110,22 +122,22 @@ bool NRF24L01::SetTxAddress(uint8_t *adr) {
 
 /* TODO: Flush FIFOs */
 void NRF24L01::FlushTX(void){
+	uint8_t tx = NRF24L01_FLUSH_TX_MASK;
 	this->CSN_LOW();
 #ifndef RPI
-	uint8_t tx = NRF24L01_FLUSH_TX_MASK;
 	HAL_SPI_Transmit(this->pspi, &tx, 1, HAL_MAX_DELAY);
 #else
-	//TODO:
+	wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
 #endif
 	this->CSN_HIGH();
 }
 void NRF24L01::FlushRX(void){
+	uint8_t tx = NRF24L01_FLUSH_RX_MASK;
 	this->CSN_LOW();
 #ifndef RPI
-	uint8_t tx = NRF24L01_FLUSH_RX_MASK;
 	HAL_SPI_Transmit(this->pspi, &tx, 1, HAL_MAX_DELAY);
 #else
-	//TODO:
+	wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
 #endif
 	this->CSN_HIGH();
 }
@@ -150,7 +162,7 @@ void NRF24L01::CE_LOW(void){
 #ifndef RPI
 	HAL_GPIO_WritePin(this->ce.port, this->ce.pin, GPIO_PIN_RESET);
 #else
-	//TODO:
+	digitalWrite(this->rpi_ce, LOW);
 #endif
 }
 
@@ -158,7 +170,7 @@ void NRF24L01::CE_HIGH(void){
 #ifndef RPI
 	HAL_GPIO_WritePin(this->ce.port, this->ce.pin, GPIO_PIN_SET);
 #else
-	//TODO:
+	digitalWrite(this->rpi_ce, HIGH);
 #endif
 }
 
@@ -196,7 +208,10 @@ uint8_t NRF24L01::ReadRegister(const uint8_t & _reg) {
 	HAL_SPI_Transmit(this->pspi, &mask, 1, HAL_MAX_DELAY);
 	HAL_SPI_TransmitReceive(this->pspi, &tx, &value, 1, HAL_MAX_DELAY);
 #else
-	//TODO:
+	wiringPiSPIDataRW(this->rpi_spichan, &mask, 1);
+	//value = wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
+	wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
+	value = tx; //received data is read into transmit buffer so overwrites it? 
 #endif
 	this->CSN_HIGH();
 	
@@ -212,7 +227,8 @@ void NRF24L01::ReadRegisterMulti(const uint8_t & _reg, uint8_t* data, const uint
 	HAL_SPI_Transmit(this->pspi, &mask, 1, HAL_MAX_DELAY);
 	HAL_SPI_Receive(this->pspi, data, _count, HAL_MAX_DELAY);
 #else
-	//TODO:
+	wiringPiSPIDataRW(this->rpi_spichan, &mask, 1);
+	wiringPiSPIDataRW(this->rpi_spichan, data, _count);  //TODO: check this
 #endif
 	this->CSN_HIGH();
 }
@@ -227,7 +243,8 @@ void NRF24L01::WriteRegister(const uint8_t & _reg, const uint8_t & _value) {
 	HAL_SPI_Transmit(this->pspi, &tx, 1, HAL_MAX_DELAY);
 	HAL_SPI_Transmit(this->pspi, &val, 1, HAL_MAX_DELAY);
 #else
-	//TODO:
+	wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
+	wiringPiSPIDataRW(this->rpi_spichan, &val, 1);
 #endif
 	this->CSN_HIGH();
 }
@@ -241,7 +258,8 @@ void NRF24L01::WriteRegisterMulti(const uint8_t & _reg, uint8_t *data, const uin
 	HAL_SPI_Transmit(this->pspi, &mask, 1, HAL_MAX_DELAY);
 	HAL_SPI_Transmit(this->pspi, data, _count, HAL_MAX_DELAY);
 #else
-	//TODO:
+	wiringPiSPIDataRW(this->rpi_spichan, &mask, 1);
+	wiringPiSPIDataRW(this->rpi_spichan, data, _count);  //TODO: check this
 #endif
 	this->CSN_HIGH();
 }
@@ -287,7 +305,8 @@ void NRF24L01::TransmitPayload(uint8_t *data) {
 	/* Fill payload with data*/
 	HAL_SPI_Transmit(this->pspi, data, this->config_struct.PayloadSize, HAL_MAX_DELAY);
 #else
-	//TODO:
+	wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
+	wiringPiSPIDataRW(this->rpi_spichan, data, this->config_struct.PayloadSize);  //TODO: check this
 #endif
 	/* Disable SPI */
 	this->CSN_LOW();
@@ -307,7 +326,8 @@ void NRF24L01::GetPayload(uint8_t* data) {
 	/* Read payload */
 	HAL_SPI_Receive(this->pspi, data, this->config_struct.PayloadSize, HAL_MAX_DELAY);
 #else
-	//TODO:
+	wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
+	wiringPiSPIDataRW(this->rpi_spichan, data, this->config_struct.PayloadSize);  //TODO: check this
 #endif
 	/* Pull up chip select */
 	this->CSN_HIGH();
@@ -341,7 +361,8 @@ uint8_t NRF24L01::GetStatus(void) {
 	/* First received byte is always status register */
 	HAL_SPI_TransmitReceive(this->pspi, &tx, &status, 1, HAL_MAX_DELAY);
 #else
-	//TODO:
+	wiringPiSPIDataRW(this->rpi_spichan, &tx, 1);
+	status = tx;
 #endif
 	/* Pull up chip select */
 	this->CSN_HIGH();

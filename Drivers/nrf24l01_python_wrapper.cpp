@@ -9,10 +9,21 @@ using namespace boost::python;
 BOOST_PYTHON_MODULE(nrf24l01_drv)
 {
        
-       //class_<nrf24l01>("nrf24l01_drv")
-        //      .def("greet", &nrf24l01::greet)
-        //      .def("no_greet", &nrf24l01::no_greet)
-        //      ;
+        class_<NRF24L01>("nrf24l01_drv")
+              .def("Init", &NRF24L01::Init)
+              //.def("Config", &NRF24L01::Config)                                       //Compilation error bool as return type
+              //.def("SetMyAddress", &NRF24L01::SetMyAddress)                           //Compilation error bool as return type
+              //.def("SetTxAddress", &NRF24L01::SetTxAddress)                           //Compilation error bool as return type
+              .def("DataReady", &NRF24L01::DataReady)
+              .def("GetPayload", &NRF24L01::GetPayload)                               
+              .def("TransmitPayload", &NRF24L01::TransmitPayload)                     
+              .def("GetRetransmissionsCount", &NRF24L01::GetRetransmissionsCount)
+              .def("GetTransmissionStatus", &NRF24L01::GetTransmissionStatus)
+              .def("PowerUpTx", &NRF24L01::PowerUpTx)
+              .def("PowerUpRx", &NRF24L01::PowerUpRx)
+              .def("GetStatus", &NRF24L01::GetStatus)
+              .def("PowerDown", &NRF24L01::PowerDown)
+              ;
 
         enum_<NRF24L01_Transmit_Status_t>("transmit_status")
         .value("NRF24L01_Transmit_Status_Lost", NRF24L01_Transmit_Status_Lost)
