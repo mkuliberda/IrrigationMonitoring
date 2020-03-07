@@ -36,9 +36,9 @@ IRQ			Not used	Interrupt pin. Goes low when active. Pin functionality is active,
 #include "main.h"
 
 #else
+#include "defines.h"
 #include "wiringPi.h"
 #include "wiringPiSPI.h"
-#include "defines.h"
 #endif
 
 
@@ -320,8 +320,8 @@ public:
 	bool 							SetRF(const NRF24L01_DataRate_t & _datarate, const NRF24L01_OutputPower_t & _outpwr);
 	uint8_t 						SetPayloadSize(const uint8_t & _payloadsize);
 	bool 							SetChannel(const uint8_t & _channel);
-	bool 							SetMyAddress(uint8_t *adr);
-	bool							SetTxAddress(uint8_t *adr);
+	void 							SetMyAddress(uint8_t *adr);
+	void							SetTxAddress(uint8_t *adr);
 	uint8_t 						DataReady(void);
 	void 							GetPayload(uint8_t* data);
 	void 							TransmitPayload(uint8_t *data);

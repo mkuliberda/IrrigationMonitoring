@@ -6,14 +6,18 @@
   
 using namespace boost::python;
 
+object ConfigPy(NRF24L01 & _nrf_obj, const uint8_t & _payloadsize, const uint8_t & _channel, const NRF24L01_OutputPower_t & _outpwr, const NRF24L01_DataRate_t & _datarate){
+    return object(_nrf_obj.Config(_payloadsize, _channel, _outpwr, _datarate));
+}
+
 BOOST_PYTHON_MODULE(nrf24l01_drv)
 {
        
-        class_<NRF24L01>("nrf24l01_drv")
+        class_<NRF24L01>("NRF24L01")
               .def("Init", &NRF24L01::Init)
-              //.def("Config", &NRF24L01::Config)                                       //Compilation error bool as return type
-              //.def("SetMyAddress", &NRF24L01::SetMyAddress)                           //Compilation error bool as return type
-              //.def("SetTxAddress", &NRF24L01::SetTxAddress)                           //Compilation error bool as return type
+              .def("Config", ConfigPy)                                       //TODO: check if this wrapper works
+              .def("SetMyAddress", &NRF24L01::SetMyAddress)
+              .def("SetTxAddress", &NRF24L01::SetTxAddress)
               .def("DataReady", &NRF24L01::DataReady)
               .def("GetPayload", &NRF24L01::GetPayload)                               
               .def("TransmitPayload", &NRF24L01::TransmitPayload)                     
@@ -25,21 +29,21 @@ BOOST_PYTHON_MODULE(nrf24l01_drv)
               .def("PowerDown", &NRF24L01::PowerDown)
               ;
 
-        enum_<NRF24L01_Transmit_Status_t>("transmit_status")
+        enum_<NRF24L01_Transmit_Status_t>("NRF24L01_TransmitStatus")
         .value("NRF24L01_Transmit_Status_Lost", NRF24L01_Transmit_Status_Lost)
         .value("NRF24L01_Transmit_Status_Ok", NRF24L01_Transmit_Status_Ok)
         .value("NRF24L01_Transmit_Status_Sending", NRF24L01_Transmit_Status_Sending)
         .export_values()
         ;
 
-       enum_<NRF24L01_DataRate_t>("datarate")
+       enum_<NRF24L01_DataRate_t>("NRF24L01_DataRate")
         .value("NRF24L01_DataRate_2M", NRF24L01_DataRate_2M)
         .value("NRF24L01_DataRate_1M", NRF24L01_DataRate_1M)
         .value("NRF24L01_DataRate_250k", NRF24L01_DataRate_250k)
         .export_values()
         ;
 
-       enum_<NRF24L01_OutputPower_t>("output_power")
+       enum_<NRF24L01_OutputPower_t>("NRF24L01_OutputPower")
         .value("NRF24L01_OutputPower_M18dBm", NRF24L01_OutputPower_M18dBm)
         .value("NRF24L01_OutputPower_M12dBm", NRF24L01_OutputPower_M12dBm)
         .value("NRF24L01_OutputPower_M6dBm", NRF24L01_OutputPower_M6dBm)

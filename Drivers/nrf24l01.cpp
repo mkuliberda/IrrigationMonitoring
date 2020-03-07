@@ -43,7 +43,7 @@ void NRF24L01::Init(const int & _spidev, const int & _spichan, const int & _ce, 
 
 
 bool& NRF24L01::Config(const uint8_t & _payloadsize, const uint8_t & _channel, const NRF24L01_OutputPower_t & _outpwr, const NRF24L01_DataRate_t & _datarate) {
-	
+
 	this->valid = true;
 
 	/* Max payload is 32bytes */
@@ -98,26 +98,23 @@ bool& NRF24L01::Config(const uint8_t & _payloadsize, const uint8_t & _channel, c
 	
 	/* Go to RX mode */
 	this->PowerUpRx();
-	
-	/* Return OK */
+
 	return this->valid;
 }
 
-bool NRF24L01::SetMyAddress(uint8_t *adr) {
+void NRF24L01::SetMyAddress(uint8_t *adr) {
 	this->CE_LOW();
 	this->WriteRegisterMulti(NRF24L01_REG_RX_ADDR_P1, adr, 5);
 	this->CE_HIGH();
 	//TODO: read register and check if values has been written, return true or false
 
-	return true;
 }
 
-bool NRF24L01::SetTxAddress(uint8_t *adr) {
+void NRF24L01::SetTxAddress(uint8_t *adr) {
 	this->WriteRegisterMulti(NRF24L01_REG_RX_ADDR_P0, adr, 5);
 	this->WriteRegisterMulti(NRF24L01_REG_TX_ADDR, adr, 5);
 	//TODO: read register and check if valus has been written, return true or false
 
-	return true;
 }
 
 /* TODO: Flush FIFOs */
@@ -146,7 +143,7 @@ void NRF24L01::CSN_LOW(void){
 #ifndef RPI
 	HAL_GPIO_WritePin(this->csn.port, this->csn.pin, GPIO_PIN_RESET);
 #else
-	//TODO:
+	// On RPI CS is handled inside the SPI driver
 #endif
 }
 
@@ -154,7 +151,7 @@ void NRF24L01::CSN_HIGH(void){
 #ifndef RPI
 	HAL_GPIO_WritePin(this->csn.port, this->csn.pin, GPIO_PIN_SET);
 #else
-	//TODO:
+	// On RPI CS is handled inside the SPI driver
 #endif
 }
 

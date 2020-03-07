@@ -1,8 +1,18 @@
-#import nrf24l01_drv
-import nrf24l01_test
+import nrf24l01_drv as nrf
+#import nrf24l01_test
 
-radio = nrf24l01_test.nrf24l01()
+RADIO1_CE_PIN = 25
+RADIO1_IRQ_PIN = 23 
+RADIO1_SPIDEV = 0
+RADIO1_SPICS = 0
+RADIO1_PAYLOAD_SIZE = 32
+RADIO1_CHANNEL = 15
 
-radio.no_greet()
-print(radio.greet())
+
+
+radio1 = nrf.NRF24L01()
+radio1.Init(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN)
+radio1.Config(RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL, nrf.NRF24L01_OutputPower.NRF24L01_OutputPower_M18dBm, nrf.NRF24L01_DataRate.NRF24L01_DataRate_2M)
+
+print("done, exitting...")
 
