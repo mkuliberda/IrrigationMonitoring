@@ -10,16 +10,49 @@ object ConfigPy(NRF24L01 & _nrf_obj, const uint8_t & _payloadsize, const uint8_t
     return object(_nrf_obj.Config(_payloadsize, _channel, _outpwr, _datarate));
 }
 
+list GetPayloadPy(NRF24L01 & _nrf_obj){
+    list a;
+    uint8_t buffer[32]; //max payload is 32
+    _nrf_obj.GetPayload(buffer);
+    uint8_t payload_size = _nrf_obj.GetPayloadSize();
+
+    for (uint8_t i = 0; i < payload_size; ++i) {   //TODO: check ++i or i++
+        a.append(buffer[i]);
+    }
+    return a;
+}
+
+void SetMyAddressPy(NRF24L01 & _nrf_obj, list _addr){
+    uint8_t address[5];
+
+    for (uint8_t i = 0; i < 5; i++){
+        address[i] = extract<uint8_t>(_addr[i]);
+    }
+
+    _nrf_obj.SetMyAddress(address);
+}
+
+void SetTxAddressPy(NRF24L01 & _nrf_obj, list _addr){
+    uint8_t address[5];
+
+    for (uint8_t i = 0; i < 5; i++){
+        address[i] = extract<uint8_t>(_addr[i]);
+    }
+
+    _nrf_obj.SetTxAddress(address);
+}
+
+
 BOOST_PYTHON_MODULE(nrf24l01_drv)
 {
        
         class_<NRF24L01>("NRF24L01")
               .def("Init", &NRF24L01::Init)
               .def("Config", ConfigPy)                                       //TODO: check if this wrapper works
-              .def("SetMyAddress", &NRF24L01::SetMyAddress)
-              .def("SetTxAddress", &NRF24L01::SetTxAddress)
+              .def("SetMyAddress", SetMyAddressPy)
+              .def("SetTxAddress", SetTxAddressPy)
               .def("DataReady", &NRF24L01::DataReady)
-              .def("GetPayload", &NRF24L01::GetPayload)                               
+              .def("GetPayload", GetPayloadPy)                               
               .def("TransmitPayload", &NRF24L01::TransmitPayload)                     
               .def("GetRetransmissionsCount", &NRF24L01::GetRetransmissionsCount)
               .def("GetTransmissionStatus", &NRF24L01::GetTransmissionStatus)
