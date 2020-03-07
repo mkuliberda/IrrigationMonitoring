@@ -2,7 +2,7 @@
 #include <boost/python/enum.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/module.hpp>
-#include "nrf24l01.h"
+#include "WirelessComm/nrf24l01.h"
   
 using namespace boost::python;
 

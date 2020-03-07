@@ -14,5 +14,5 @@ radio1 = nrf.NRF24L01()
 radio1.Init(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN)
 radio1.Config(RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL, nrf.NRF24L01_OutputPower.NRF24L01_OutputPower_M18dBm, nrf.NRF24L01_DataRate.NRF24L01_DataRate_2M)
 
-print("done, exitting...")
+print("done, exiting...")
 
