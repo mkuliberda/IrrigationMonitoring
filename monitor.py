@@ -11,13 +11,17 @@ RADIO1_MY_ADDRESS = [231, 231, 231, 231, 231]  # 0xe7 is 231
 RADIO1_TX_ADDRESS = [126, 126, 126, 126, 126]  # 0x7e is 126
 
 
-radio1 = nrf.NRF24L01()
-radio1.Init(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN)
-radio1.Config(RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL, nrf.NRF24L01_OutputPower.NRF24L01_OutputPower_M18dBm, nrf.NRF24L01_DataRate.NRF24L01_DataRate_2M)
-radio1.SetMyAddress(RADIO1_MY_ADDRESS)
-radio1.SetTxAddress(RADIO1_TX_ADDRESS)
-data_ready = radio1.DataReady()
-payload = radio1.GetPayload()
 
-print(data_ready, payload, "done, exiting...")
+radio1 = nrf.NRF24L01()
+radio1.init(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN)
+radio1.config(RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL, nrf.NRF24L01_OutputPower.NRF24L01_OutputPower_M18dBm, nrf.NRF24L01_DataRate.NRF24L01_DataRate_2M)
+radio1.set_my_address(RADIO1_MY_ADDRESS)
+radio1.set_tx_address(RADIO1_TX_ADDRESS)
+data_ready = radio1.is_data_ready()
+rcv_payload = radio1.get_payload()
+tx_payload = [219] * RADIO1_PAYLOAD_SIZE
+radio1.transmit_payload(tx_payload)
+
+
+print(data_ready, rcv_payload, "done, exiting...")
 
