@@ -10,31 +10,34 @@ object ConfigPy(NRF24L01 & _nrf_obj, const uint8_t & _payloadsize, const uint8_t
     return object(_nrf_obj.Config(_payloadsize, _channel, _outpwr, _datarate));
 }
 
+
 list GetPayloadPy(NRF24L01 & _nrf_obj){
     list a;
     uint8_t buffer[32]; //max payload is 32
+
     _nrf_obj.GetPayload(buffer);
     uint8_t payload_size = _nrf_obj.GetPayloadSize();
-
-    for (uint8_t i = 0; i < payload_size; ++i) {   //TODO: check ++i or i++
+    for (uint8_t i = 0; i < payload_size; ++i){
         a.append(buffer[i]);
     }
+
     return a;
 }
 
 void TransmitPayloadPy(NRF24L01 & _nrf_obj, list _payload){
     uint8_t buffer[32]; //max payload is 32
 
-    for (uint8_t i = 0; i < _nrf_obj.GetPayloadSize(); i++){
+    for (uint8_t i = 0; i < _nrf_obj.GetPayloadSize(); ++i){
         buffer[i] = extract<uint8_t>(_payload[i]);
     }
+
     _nrf_obj.TransmitPayload(buffer);
 }
 
 void SetMyAddressPy(NRF24L01 & _nrf_obj, list _addr){
     uint8_t address[5];
 
-    for (uint8_t i = 0; i < 5; i++){
+    for (uint8_t i = 0; i < 5; ++i){
         address[i] = extract<uint8_t>(_addr[i]);
     }
 
@@ -44,7 +47,7 @@ void SetMyAddressPy(NRF24L01 & _nrf_obj, list _addr){
 void SetTxAddressPy(NRF24L01 & _nrf_obj, list _addr){
     uint8_t address[5];
 
-    for (uint8_t i = 0; i < 5; i++){
+    for (uint8_t i = 0; i < 5; ++i){
         address[i] = extract<uint8_t>(_addr[i]);
     }
 
@@ -64,11 +67,12 @@ BOOST_PYTHON_MODULE(nrf24l01_drv)
               .def("get_payload", GetPayloadPy)                               
               .def("transmit_payload", TransmitPayloadPy)                     
               .def("get_retransmissions_count", &NRF24L01::GetRetransmissionsCount)
-              .def("get_transmissions_status", &NRF24L01::GetTransmissionStatus)
+              .def("get_transmission_status", &NRF24L01::GetTransmissionStatus)
               .def("power_up_tx", &NRF24L01::PowerUpTx)
               .def("power_up_rx", &NRF24L01::PowerUpRx)
               .def("get_status", &NRF24L01::GetStatus)
               .def("power_down", &NRF24L01::PowerDown)
+              .def("read_register_test", &NRF24L01::ReadRegisterTest)
               ;
 
         enum_<NRF24L01_Transmit_Status_t>("NRF24L01_TransmitStatus")
