@@ -1,3 +1,6 @@
 [submodule "WirelessComm"]
 	path = WirelessComm
 	url = https://github.com/mkuliberda/WirelessComm.git
+[submodule "Scheduler"]
+	path = Scheduler
+	url = https://github.com/mkuliberda/Scheduler.git
