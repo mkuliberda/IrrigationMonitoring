@@ -10,7 +10,7 @@
             <duration>00:30:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Tuesday">
-            <time>08:30:00</time>
+            <time>15:53:00</time>
             <duration>00:01:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Saturday">

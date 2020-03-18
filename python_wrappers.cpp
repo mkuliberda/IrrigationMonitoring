@@ -3,13 +3,13 @@
 #include <boost/python/def.hpp>
 #include <boost/python/module.hpp>
 #include "WirelessComm/nrf24l01.h"
+#include "msg_definitions.h"
   
 using namespace boost::python;
 
 object ConfigPy(NRF24L01 & _nrf_obj, const uint8_t & _payloadsize, const uint8_t & _channel, const NRF24L01_OutputPower_t & _outpwr, const NRF24L01_DataRate_t & _datarate){
     return object(_nrf_obj.Config(_payloadsize, _channel, _outpwr, _datarate));
 }
-
 
 list GetPayloadPy(NRF24L01 & _nrf_obj){
     list a;
@@ -55,7 +55,7 @@ void SetTxAddressPy(NRF24L01 & _nrf_obj, list _addr){
 }
 
 
-BOOST_PYTHON_MODULE(nrf24l01_drv)
+BOOST_PYTHON_MODULE(wireless_comm_lib)
 {
        
         class_<NRF24L01>("NRF24L01")
@@ -97,5 +97,44 @@ BOOST_PYTHON_MODULE(nrf24l01_drv)
         .export_values()
         ;
 
-       
+        enum_<Target_t>("tgt")
+        .value("Generic", Generic)
+        .value("Pump", Pump)
+        .value("Tank", Tank)
+        .value("Plant", Plant)
+        .value("PowerSupply", Power)
+        .value("System", System)
+        .value("All", All)
+        .export_values()
+        ;
+
+       enum_<Direction_t>("dir")
+        .value("from_rpi_to_irm", RPiToIRM)
+        .value("from_irm_to_rpi", IRMToRPi)
+        .export_values()
+        ;
+
+       enum_<Command_t>("cmd")
+        .value("None", None)
+        .value("Start", Start)
+        .value("Stop", Stop)
+        .value("ForceStart", ForceStart)
+        .value("ForceStop", ForceStop)
+        .value("StartRev", StartRev)
+        .value("ForceStartRev", ForceStartRev)
+        .value("GetLiquidLevel", GetLiquidLevel)
+        .value("GetTemperature", GetTemperature)
+        .value("GetMoisture", GetMoisture)
+        .value("GetVoltage", GetVoltage)
+        .value("GetCurrent", GetCurrent)
+        .value("GetChargeLevel", GetChargeLevel)
+        .value("GetCycles", GetCycles)
+        .value("GetDescription", GetDescription)
+        .value("SetSleep", SetSleep)
+        .value("SetStandby", SetStandby)
+        .value("GetState", GetState)
+        .value("GetStatus", GetStatus)
+        .export_values()
+        ; 
+
 }
