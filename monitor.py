@@ -18,19 +18,18 @@ RADIO1_PAYLOAD_SIZE = 32
 RADIO1_CHANNEL = 15
 RADIO1_MY_ADDRESS = [231, 231, 231, 231, 231]  # 0xe7 is 231
 RADIO1_TX_ADDRESS = [126, 126, 126, 126, 126]  # 0x7e is 126
-DUMMY = [0] * 27
-MSG_STRING = "That's only an empty msg"
-commands_queue = []
-messages_queue = []
-command = [wireless.dir.from_rpi_to_irm, wireless.tgt.Generic, 0, wireless.cmd.None, DUMMY, 0]
+messages_to_send_queue = []
+messages_received_queue = []
+command = [0] * RADIO1_PAYLOAD_SIZE
+command[0] = wireless.dir.from_rpi_to_irm
+print(command)
 
 
 PLANTS_SCHEDULES = ["plants_group1_schedule.xml", "plants_group2_schedule.xml", "plants_group3_schedule.xml"]
 
 lock = threading.RLock()
-send_cmd_event = threading.Event()
-confirmation_event = threading.Event()
-rcv_msg_event = threading.Event()
+
+new_message_event = threading.Event()
 get_plants_health_event = threading.Event()
 irrigation_time_event = threading.Event()
 
@@ -43,6 +42,7 @@ class schedulingThread(threading.Thread):
                 self._activity_current = dict.fromkeys(self._tags, False)
                 self._activity_queue = []
                 self._running = True
+                self._activity_event = threading.Event()
                 threading.Thread.__init__(self)
 
         def terminate(self):
@@ -55,6 +55,7 @@ class schedulingThread(threading.Thread):
                 while self._running:
                         if self._activity_changed() is True:
                                 print("send_event")
+                                self._activity_event.set()
                         time.sleep(1)
         
         def _activity_changed(self):
@@ -75,9 +76,24 @@ class schedulingThread(threading.Thread):
         def clear_tasks_queue(self):
                 self._activity_queue = []
 
+        def configure_activity_event(self, event):
+                self._activity_event = event
+
+
+
 class communicationsThread(threading.Thread):
-        def __init__(self):
-                self._running = True
+        def __init__(self, spi_dev, spi_cs, ce_pin, irq_pin, payload_size, channel, out_pwr, datarate, src_addr, dest_addr):
+                self._radio1 = wireless.NRF24L01()
+                self._radio1.init(spi_dev, spi_cs, ce_pin, irq_pin)
+                self._radio1_configured = self._radio1.config(payload_size, channel, out_pwr, datarate)
+                if self._radio1_configured is True: 
+                        self._radio1.set_my_address(src_addr)
+                        self._radio1.set_tx_address(dest_addr)
+                        self._running = True
+                else:
+                        self._running = False
+                        print("configuration of radio1 failed, terminating thread...")
+                self._new_message_event = threading.Event()
                 threading.Thread.__init__(self)
 
         def terminate(self):
@@ -88,9 +104,22 @@ class communicationsThread(threading.Thread):
 
         def run(self):
                 while self._running:
-                        time.sleep(0.2)
+                        
+                                print("send new message notification")
+                                self._activity_event.clear()
+                        print("comm run")
+                        #time.sleep(0.5)
 
-class monitoringThread(threading.Thread):
+        def configure_activity_event(self, event):
+                self._activity_event = event
+        
+        def send_message(self, message):
+                pass
+
+        def retreive_message(self):
+                return "message"      
+
+class loggingThread(threading.Thread):
         def __init__(self):
                 self._running = True
                 threading.Thread.__init__(self)
@@ -105,32 +134,54 @@ class monitoringThread(threading.Thread):
                 while self._running:
                         time.sleep(1)
 
-irrigation_scheduler = schedulingThread(PLANTS_SCHEDULES)
-irrigation_scheduler.start()
+
+if __name__ == "__main__":
+
+        irrigation_scheduler = schedulingThread(PLANTS_SCHEDULES)
+        irrigation_scheduler.configure_activity_event(irrigation_time_event)
+        irrigation_scheduler.start()
+
+        communicator = communicationsThread(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN,
+                                                RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL,
+                                                wireless.NRF24L01_OutputPower.NRF24L01_OutputPower_0dBm,
+                                                wireless.NRF24L01_DataRate.NRF24L01_DataRate_2M,
+                                                RADIO1_MY_ADDRESS, RADIO1_TX_ADDRESS)
+        communicator.configure_activity_event(irrigation_time_event)
+        communicator.start()
+
+        #tx_payload = [218] * RADIO1_PAYLOAD_SIZE
+        #radio1.transmit_payload(tx_payload)
+        #while radio1.get_transmission_status() == wireless.NRF24L01_TransmitStatus.NRF24L01_Transmit_Status_Sending:
+        #        print ("Sending...")
+        #        time.sleep(0.05)
+        #print(radio1.get_transmission_status())
+        #radio1.power_up_rx()
+        #time.sleep(0.5)
+        #print(radio1.get_status())
+        #(irrigation_scheduler.pick_tasks_from_queue())
+        #irrigation_scheduler.mark_tasks_consumed()
+
+        try:
+                while True:
+                        print("working")
+                        #if self._new_message_event.wait(5):
+                        time.sleep(10)
+        except KeyboardInterrupt:
+                pass
 
 
-radio1 = wireless.NRF24L01()
-radio1.init(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN)
-config = radio1.config(RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL, wireless.NRF24L01_OutputPower.NRF24L01_OutputPower_0dBm, wireless.NRF24L01_DataRate.NRF24L01_DataRate_2M)
-radio1.set_my_address(RADIO1_MY_ADDRESS)
-radio1.set_tx_address(RADIO1_TX_ADDRESS)
 
-tx_payload = [218] * RADIO1_PAYLOAD_SIZE
-radio1.transmit_payload(tx_payload)
-while radio1.get_transmission_status() == wireless.NRF24L01_TransmitStatus.NRF24L01_Transmit_Status_Sending:
-        print ("Sending...")
-        time.sleep(0.05)
-print(radio1.get_transmission_status())
-radio1.power_up_rx()
-time.sleep(0.5)
-print(radio1.get_status())
-print(irrigation_scheduler.pick_tasks_from_queue())
-#irrigation_scheduler.mark_tasks_consumed()
+        print("shutting down...")
 
+        irrigation_scheduler.terminate()
+        irrigation_scheduler.join(5)
+        del irrigation_scheduler
+        print("irrigation scheduler off!")
 
+        communicator.terminate()
+        communicator.join(2)
+        del communicator
+        print("communicator off!")
 
-irrigation_scheduler.terminate()
-irrigation_scheduler.join(5)
-del irrigation_scheduler
-print("done, exiting...")
+        print("done, exiting...")
 
