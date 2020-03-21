@@ -177,10 +177,10 @@ if __name__ == "__main__":
         del irrigation_scheduler
         print("irrigation scheduler off!")
 
-        communicator.terminate()
-        communicator.join(2)
-        del communicator
-        print("communicator off!")
+        communicator1.terminate()
+        communicator1.join(2)
+        del communicator1
+        print("communicator1 off!")
 
         print("done, exiting...")
 
