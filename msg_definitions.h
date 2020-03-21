@@ -10,6 +10,7 @@ typedef enum _Target_t {
 	Pump 		= 0x01,   
 	Tank 		= 0x02,     
 	Plant 		= 0x03,
+	PlantsGroup	= 0x04,
 	Power		= 0x0D,
 	System		= 0x0E,
 	All			= 0xFF
