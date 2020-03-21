@@ -22,14 +22,13 @@ messages_to_send_queue = []
 messages_received_queue = []
 command = [0] * RADIO1_PAYLOAD_SIZE
 command[0] = wireless.dir.from_rpi_to_irm
-print(command)
 
 
 PLANTS_SCHEDULES = ["plants_group1_schedule.xml", "plants_group2_schedule.xml", "plants_group3_schedule.xml"]
 
 lock = threading.RLock()
 
-new_message_event = threading.Event()
+message_received_event = threading.Event()
 get_plants_health_event = threading.Event()
 irrigation_time_event = threading.Event()
 
@@ -76,7 +75,7 @@ class schedulingThread(threading.Thread):
         def clear_tasks_queue(self):
                 self._activity_queue = []
 
-        def configure_activity_event(self, event):
+        def configure_notification_event(self, event):
                 self._activity_event = event
 
 
@@ -104,71 +103,71 @@ class communicationsThread(threading.Thread):
 
         def run(self):
                 while self._running:
-                        
+                        if self._radio1.data_ready is True:
+                                self._new_message_event.set()
                                 print("send new message notification")
-                                self._activity_event.clear()
-                        print("comm run")
-                        #time.sleep(0.5)
 
-        def configure_activity_event(self, event):
-                self._activity_event = event
+        def configure_notification_event(self, event):
+                self._new_message_event = event
         
-        def send_message(self, message):
-                pass
+        def send_message(self, payload):
+                self._radio1.transmit_payload(payload)
+                while self._radio1.get_transmission_status() == wireless.NRF24L01_TransmitStatus.NRF24L01_Transmit_Status_Sending:
+                        pass     
+                print("message sent")
+                self._radio1.power_up_rx()
+                while self._radio1.get_status() != 14:
+                        time.sleep(0.2)
+                        self._radio1.power_up_rx()
+                print("back to receiver mode")
 
-        def retreive_message(self):
+        def retreive_received_message(self):
                 return "message"      
 
-class loggingThread(threading.Thread):
-        def __init__(self):
-                self._running = True
-                threading.Thread.__init__(self)
-        
-        def terminate(self):
-                self._running = False
-        
-        def is_running(self):
-                return self._running
-        
-        def run(self):
-                while self._running:
-                        time.sleep(1)
+def encode_message(message):
+        buffer = message
+        return buffer
 
+def decode_payload(payload):
+        buffer = payload
+        return buffer
 
 if __name__ == "__main__":
 
         irrigation_scheduler = schedulingThread(PLANTS_SCHEDULES)
-        irrigation_scheduler.configure_activity_event(irrigation_time_event)
+        irrigation_scheduler.configure_notification_event(irrigation_time_event)
         irrigation_scheduler.start()
 
-        communicator = communicationsThread(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN,
+        communicator1 = communicationsThread(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN,
                                                 RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL,
                                                 wireless.NRF24L01_OutputPower.NRF24L01_OutputPower_0dBm,
                                                 wireless.NRF24L01_DataRate.NRF24L01_DataRate_2M,
                                                 RADIO1_MY_ADDRESS, RADIO1_TX_ADDRESS)
-        communicator.configure_activity_event(irrigation_time_event)
-        communicator.start()
+        communicator1.configure_notification_event(message_received_event)
+        communicator1.start()
 
-        #tx_payload = [218] * RADIO1_PAYLOAD_SIZE
-        #radio1.transmit_payload(tx_payload)
-        #while radio1.get_transmission_status() == wireless.NRF24L01_TransmitStatus.NRF24L01_Transmit_Status_Sending:
-        #        print ("Sending...")
-        #        time.sleep(0.05)
-        #print(radio1.get_transmission_status())
-        #radio1.power_up_rx()
-        #time.sleep(0.5)
-        #print(radio1.get_status())
-        #(irrigation_scheduler.pick_tasks_from_queue())
-        #irrigation_scheduler.mark_tasks_consumed()
+        tx_payload = [218] * RADIO1_PAYLOAD_SIZE
 
         try:
                 while True:
-                        print("working")
-                        #if self._new_message_event.wait(5):
-                        time.sleep(10)
+                        message_received_event.wait(0.5)
+                        if message_received_event.is_set():
+                                decode_payload(communicator.retreive_message())
+                                message_received_event.clear()
+                        else:
+                                print("there's no new messages")
+
+                        irrigation_time_event.wait(0.5)
+                        if irrigation_time_event.is_set():
+                                irrigation_time_event.clear()
+                                tasks = irrigation_scheduler.pick_tasks_from_queue()
+                                for task in tasks:
+                                        print(task)
+                                        communicator1.send_message(tx_payload)
+                        else:
+                                print("there's no irrigation event")
         except KeyboardInterrupt:
                 pass
-
 
 
         print("shutting down...")

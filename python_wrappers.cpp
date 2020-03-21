@@ -63,7 +63,7 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
               .def("config", ConfigPy)                                       //TODO: check if this wrapper works
               .def("set_my_address", SetMyAddressPy)
               .def("set_tx_address", SetTxAddressPy)
-              .def("is_data_ready", &NRF24L01::DataReady)
+              .def("data_ready", &NRF24L01::DataReady)
               .def("get_payload", GetPayloadPy)                               
               .def("transmit_payload", TransmitPayloadPy)                     
               .def("get_retransmissions_count", &NRF24L01::GetRetransmissionsCount)
