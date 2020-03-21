@@ -2,6 +2,7 @@ import wireless_comm_lib as wireless
 import time
 import Scheduler
 import threading
+import re
 
 
 RADIO1_CE_PIN = 26   # BCM pins numbering
@@ -96,9 +97,10 @@ class communicationsThread(threading.Thread):
 
         def run(self):
                 while self._running:
-                        if self._radio1.data_ready is True:
+                        while self._radio1.data_ready() is True:
+                                print(decode_message(wireless_link.retreive_message())) # TODO: assign values to variables
                                 self._new_message_event.set()
-                                print("send new message notification")
+                        time.sleep(0.05)
 
         def configure_notification_event(self, event):
                 self._new_message_event = event
@@ -107,14 +109,14 @@ class communicationsThread(threading.Thread):
                 self._radio1.transmit_payload(payload)
                 while self._radio1.get_transmission_status() == wireless.NRF24L01_TransmitStatus.Sending:
                         pass     
-                print("message sent")
+                print("message sent", payload)
                 self._radio1.power_up_rx()
                 while self._radio1.get_status() != 14:
                         time.sleep(0.2)
                         self._radio1.power_up_rx()
                 print("back to receiver mode")
 
-        def retreive_received_message(self):
+        def retreive_received_messages(self):
                 return "message"
 
 def get_status(event):
@@ -137,7 +139,7 @@ def encode_message(payload_size, direction, target, id, command):
 
 # STM32->RPi            |0xBB|Target|ID|Value|String|CRC|
 # bytes                 |1   | 1    |1 |4    |24    |1  |
-def decode_message(payload):
+def decode_message(payload):  # TODO
         message = payload
         #wireless.target.values # returns enums as dictionary
         return message
@@ -161,27 +163,33 @@ if __name__ == "__main__":
         status_getter.start()
 
         tx_payload = [218] * RADIO1_PAYLOAD_SIZE
-        #print(encode_message(RADIO1_PAYLOAD_SIZE, wireless.direction.from_rpi_to_irm, wireless.target.Plant, 0, wireless.command.GetMoisture))
 
 
         try:
                 while True:
-                        message_received_event.wait(0.5)
-                        if message_received_event.is_set():
-                                message_received_event.clear()
-                                print(decode_message(wireless_link.retreive_message()))
-                        else:
-                                print("there's no new messages")
-
                         irrigation_time_event.wait(0.5)
                         if irrigation_time_event.is_set():
                                 irrigation_time_event.clear()
                                 tasks = irrigation_scheduler.pick_tasks_from_queue()
                                 for task in tasks:
-                                        print(task)
+                                        id = int(re.findall(r'\d+',task.keys()[0])[0])
+                                        cmd = task.values()[0]
+                                        if cmd is True: 
+                                                tx_payload = encode_message(RADIO1_PAYLOAD_SIZE, wireless.direction.from_rpi_to_irm, wireless.target.PlantsGroup, id, wireless.command.Start)
+                                        else:
+                                                tx_payload = encode_message(RADIO1_PAYLOAD_SIZE, wireless.direction.from_rpi_to_irm, wireless.target.PlantsGroup, id, wireless.command.Stop)
                                         wireless_link.send_message(tx_payload)
                         else:
                                 print("there's no irrigation event")
+
+                        get_status_event.wait(0.5)
+                        if get_status_event.is_set():
+                                get_status_event.clear()
+                                tx_payload = encode_message(RADIO1_PAYLOAD_SIZE, wireless.direction.from_rpi_to_irm, wireless.target.All, 0, wireless.command.GetStatus)
+                                wireless_link.send_message(tx_payload)
+                        else:
+                                print("there's no new messages")
+
                         
         except KeyboardInterrupt:
                 pass
