@@ -76,28 +76,28 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
               ;
 
         enum_<NRF24L01_Transmit_Status_t>("NRF24L01_TransmitStatus")
-        .value("NRF24L01_Transmit_Status_Lost", NRF24L01_Transmit_Status_Lost)
-        .value("NRF24L01_Transmit_Status_Ok", NRF24L01_Transmit_Status_Ok)
-        .value("NRF24L01_Transmit_Status_Sending", NRF24L01_Transmit_Status_Sending)
+        .value("Lost", NRF24L01_Transmit_Status_Lost)
+        .value("Ok", NRF24L01_Transmit_Status_Ok)
+        .value("Sending", NRF24L01_Transmit_Status_Sending)
         .export_values()
         ;
 
        enum_<NRF24L01_DataRate_t>("NRF24L01_DataRate")
-        .value("NRF24L01_DataRate_2M", NRF24L01_DataRate_2M)
-        .value("NRF24L01_DataRate_1M", NRF24L01_DataRate_1M)
-        .value("NRF24L01_DataRate_250k", NRF24L01_DataRate_250k)
+        .value("_2Mbps", NRF24L01_DataRate_2M)
+        .value("_1Mbps", NRF24L01_DataRate_1M)
+        .value("_250kbps", NRF24L01_DataRate_250k)
         .export_values()
         ;
 
        enum_<NRF24L01_OutputPower_t>("NRF24L01_OutputPower")
-        .value("NRF24L01_OutputPower_M18dBm", NRF24L01_OutputPower_M18dBm)
-        .value("NRF24L01_OutputPower_M12dBm", NRF24L01_OutputPower_M12dBm)
-        .value("NRF24L01_OutputPower_M6dBm", NRF24L01_OutputPower_M6dBm)
-        .value("NRF24L01_OutputPower_0dBm", NRF24L01_OutputPower_0dBm)
+        .value("M18dBm", NRF24L01_OutputPower_M18dBm)
+        .value("M12dBm", NRF24L01_OutputPower_M12dBm)
+        .value("M6dBm", NRF24L01_OutputPower_M6dBm)
+        .value("P0dBm", NRF24L01_OutputPower_0dBm)
         .export_values()
         ;
 
-        enum_<Target_t>("tgt")
+        enum_<Target_t>("target")
         .value("Generic", Generic)
         .value("Pump", Pump)
         .value("Tank", Tank)
@@ -109,13 +109,13 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
         .export_values()
         ;
 
-       enum_<Direction_t>("dir")
+       enum_<Direction_t>("direction")
         .value("from_rpi_to_irm", RPiToIRM)
         .value("from_irm_to_rpi", IRMToRPi)
         .export_values()
         ;
 
-       enum_<Command_t>("cmd")
+       enum_<Command_t>("command")
         .value("None", None)
         .value("Start", Start)
         .value("Stop", Stop)

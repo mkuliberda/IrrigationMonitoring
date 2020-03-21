@@ -4,12 +4,6 @@ import Scheduler
 import threading
 
 
-# RPi->STM32            |0xAA|Target|ID|Cmd|Dummy|CRC|
-# bytes                 |1   |1     |1 |1  |27   | 1 |
-
-# STM32->RPi            |0xBB|Target|ID|Value|String|CRC|
-# bytes                 |1   | 1    |1 |4    |24    |1  |
-
 RADIO1_CE_PIN = 26   # BCM pins numbering
 RADIO1_IRQ_PIN = 13  # BCM pins numbering 
 RADIO1_SPIDEV = 0
@@ -21,7 +15,6 @@ RADIO1_TX_ADDRESS = [126, 126, 126, 126, 126]  # 0x7e is 126
 messages_to_send_queue = []
 messages_received_queue = []
 command = [0] * RADIO1_PAYLOAD_SIZE
-command[0] = wireless.dir.from_rpi_to_irm
 
 
 PLANTS_SCHEDULES = ["plants_group1_schedule.xml", "plants_group2_schedule.xml", "plants_group3_schedule.xml"]
@@ -112,7 +105,7 @@ class communicationsThread(threading.Thread):
         
         def send_message(self, payload):
                 self._radio1.transmit_payload(payload)
-                while self._radio1.get_transmission_status() == wireless.NRF24L01_TransmitStatus.NRF24L01_Transmit_Status_Sending:
+                while self._radio1.get_transmission_status() == wireless.NRF24L01_TransmitStatus.Sending:
                         pass     
                 print("message sent")
                 self._radio1.power_up_rx()
@@ -124,13 +117,24 @@ class communicationsThread(threading.Thread):
         def retreive_received_message(self):
                 return "message"      
 
-def encode_message(message):
-        buffer = message
-        return buffer
 
-def decode_payload(payload):
-        buffer = payload
-        return buffer
+# RPi->STM32            |0xAA|Target|ID|Cmd|Dummy|CRC|
+# bytes                 |1   |1     |1 |1  |27   | 1 |
+
+def encode_message(size, direction, target, id, command):
+        payload = [0] * size
+        payload[0] = int(direction)
+        payload[1] = int(target)
+        payload[2] = int(id)
+        payload[3] = int(command)
+        payload[-1] = 5         # crc in the future as last byte
+        return payload
+
+# STM32->RPi            |0xBB|Target|ID|Value|String|CRC|
+# bytes                 |1   | 1    |1 |4    |24    |1  |
+def decode_message(payload):
+        message = payload
+        return message
 
 if __name__ == "__main__":
 
@@ -140,20 +144,21 @@ if __name__ == "__main__":
 
         communicator1 = communicationsThread(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN,
                                                 RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL,
-                                                wireless.NRF24L01_OutputPower.NRF24L01_OutputPower_0dBm,
-                                                wireless.NRF24L01_DataRate.NRF24L01_DataRate_2M,
+                                                wireless.NRF24L01_OutputPower.P0dBm,
+                                                wireless.NRF24L01_DataRate._2Mbps,
                                                 RADIO1_MY_ADDRESS, RADIO1_TX_ADDRESS)
         communicator1.configure_notification_event(message_received_event)
         communicator1.start()
 
         tx_payload = [218] * RADIO1_PAYLOAD_SIZE
 
+
         try:
                 while True:
                         message_received_event.wait(0.5)
                         if message_received_event.is_set():
-                                decode_payload(communicator.retreive_message())
                                 message_received_event.clear()
+                                print(decode_message(communicator.retreive_message()))
                         else:
                                 print("there's no new messages")
 
