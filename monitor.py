@@ -142,13 +142,13 @@ if __name__ == "__main__":
         irrigation_scheduler.configure_notification_event(irrigation_time_event)
         irrigation_scheduler.start()
 
-        communicator1 = communicationsThread(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN,
+        wireless_link = communicationsThread(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN,
                                                 RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL,
                                                 wireless.NRF24L01_OutputPower.P0dBm,
                                                 wireless.NRF24L01_DataRate._2Mbps,
                                                 RADIO1_MY_ADDRESS, RADIO1_TX_ADDRESS)
-        communicator1.configure_notification_event(message_received_event)
-        communicator1.start()
+        wireless_link.configure_notification_event(message_received_event)
+        wireless_link.start()
 
         tx_payload = [218] * RADIO1_PAYLOAD_SIZE
 
@@ -168,7 +168,7 @@ if __name__ == "__main__":
                                 tasks = irrigation_scheduler.pick_tasks_from_queue()
                                 for task in tasks:
                                         print(task)
-                                        communicator1.send_message(tx_payload)
+                                        wireless_link.send_message(tx_payload)
                         else:
                                 print("there's no irrigation event")
         except KeyboardInterrupt:
@@ -182,10 +182,10 @@ if __name__ == "__main__":
         del irrigation_scheduler
         print("irrigation scheduler off!")
 
-        communicator1.terminate()
-        communicator1.join(2)
-        del communicator1
-        print("communicator1 off!")
+        wireless_link.terminate()
+        wireless_link.join(2)
+        del wireless_link
+        print("wireless_link off!")
 
         print("done, exiting...")
 
