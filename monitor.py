@@ -158,7 +158,7 @@ if __name__ == "__main__":
                         message_received_event.wait(0.5)
                         if message_received_event.is_set():
                                 message_received_event.clear()
-                                print(decode_message(communicator.retreive_message()))
+                                print(decode_message(wireless_link.retreive_message()))
                         else:
                                 print("there's no new messages")
 
