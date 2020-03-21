@@ -22,7 +22,7 @@ PLANTS_SCHEDULES = ["plants_group1_schedule.xml", "plants_group2_schedule.xml", 
 lock = threading.RLock()
 
 message_received_event = threading.Event()
-get_plants_health_event = threading.Event()
+get_status_event = threading.Event()
 irrigation_time_event = threading.Event()
 
 
@@ -115,14 +115,19 @@ class communicationsThread(threading.Thread):
                 print("back to receiver mode")
 
         def retreive_received_message(self):
-                return "message"      
+                return "message"
+
+def get_status(event):
+        while True:
+                event.set()
+                time.sleep(60)      
 
 
 # RPi->STM32            |0xAA|Target|ID|Cmd|Dummy|CRC|
 # bytes                 |1   |1     |1 |1  |27   | 1 |
 
-def encode_message(size, direction, target, id, command):
-        payload = [0] * size
+def encode_message(payload_size, direction, target, id, command):
+        payload = [0] * payload_size
         payload[0] = int(direction)
         payload[1] = int(target)
         payload[2] = int(id)
@@ -134,6 +139,7 @@ def encode_message(size, direction, target, id, command):
 # bytes                 |1   | 1    |1 |4    |24    |1  |
 def decode_message(payload):
         message = payload
+        #wireless.target.values # returns enums as dictionary
         return message
 
 if __name__ == "__main__":
@@ -150,7 +156,12 @@ if __name__ == "__main__":
         wireless_link.configure_notification_event(message_received_event)
         wireless_link.start()
 
+        status_getter = threading.Thread(name='status getter', target=get_status, args=(get_status_event,))
+        status_getter.daemon = True
+        status_getter.start()
+
         tx_payload = [218] * RADIO1_PAYLOAD_SIZE
+        #print(encode_message(RADIO1_PAYLOAD_SIZE, wireless.direction.from_rpi_to_irm, wireless.target.Plant, 0, wireless.command.GetMoisture))
 
 
         try:
@@ -171,6 +182,7 @@ if __name__ == "__main__":
                                         wireless_link.send_message(tx_payload)
                         else:
                                 print("there's no irrigation event")
+                        
         except KeyboardInterrupt:
                 pass
 
@@ -186,6 +198,9 @@ if __name__ == "__main__":
         wireless_link.join(2)
         del wireless_link
         print("wireless_link off!")
+
+        del status_getter
+        print("status_getter off!")
 
         print("done, exiting...")
 
