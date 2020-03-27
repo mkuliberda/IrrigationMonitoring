@@ -3,7 +3,7 @@
 #include <boost/python/def.hpp>
 #include <boost/python/module.hpp>
 #include "WirelessComm/nrf24l01.h"
-#include "msg_definitions.h"
+#include "WirelessComm/msg_definitions_irrigation.h"
   
 using namespace boost::python;
 
