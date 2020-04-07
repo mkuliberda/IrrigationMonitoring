@@ -54,10 +54,22 @@ void SetTxAddressPy(NRF24L01 & _nrf_obj, list _addr){
     _nrf_obj.SetTxAddress(address);
 }
 
+list encodeCmdPy(IrrigationMessage & _irm_obj, cmd_s _cmd){
+    list a;
+    array<uint8_t, PAYLOAD_SIZE> buffer;
+
+    buffer = _irm_obj.encode(_cmd);
+    for(auto &byte : buffer){
+        a.append(byte);
+    }
+
+    return a;
+}
+
+
 
 BOOST_PYTHON_MODULE(wireless_comm_lib)
-{
-       
+{       
         class_<NRF24L01>("NRF24L01")
               .def("init", &NRF24L01::Init)
               .def("config", ConfigPy)                                       //TODO: check if this wrapper works
@@ -73,7 +85,58 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
               .def("get_status", &NRF24L01::GetStatus)
               .def("power_down", &NRF24L01::PowerDown)
               .def("read_register_test", &NRF24L01::ReadRegisterTest)
+              ;             
+
+        class_<IrrigationMessage>("IrrigationMessage", init<direction_t>())
+              .def("validate_crc", &IrrigationMessage::validateCRC)
+              .def("decode_tank_message", &IrrigationMessage::decodeTank)
+              .def("decode_plant_message", &IrrigationMessage::decodePlant)
+              .def("decode_pump_message", &IrrigationMessage::decodePump)
+              .def("decode_sector_message", &IrrigationMessage::decodeSector)
+              .def("decode_confirmation", &IrrigationMessage::decodeConfirmation)              
+              .def("encode_cmd", encodeCmdPy)
+              .def("set_buffer", &IrrigationMessage::setBuffer)
               ;
+
+        class_<tankstatus_s>("tank_status_s")
+              .def_readwrite("id",&tankstatus_s::id)
+              .def_readwrite("state",&tankstatus_s::state)
+              ; 
+        
+        class_<pumpstatus_s>("pump_status_s")
+              .def_readwrite("id",&pumpstatus_s::id)
+              .def_readwrite("state",&pumpstatus_s::state)
+              .def_readwrite("forced",&pumpstatus_s::forced)
+              .def_readwrite("cmd_consumed",&pumpstatus_s::cmd_consumed)
+              ; 
+
+        class_<plant_s>("plant_status_s")
+              .def_readwrite("id",&plant_s::id)
+              .def_readwrite("health",&plant_s::health)
+ //             .def_readwrite("name",&plant_s::name)
+              ;  
+
+        class_<sectorstatus_s>("sector_status_s")
+              .def_readwrite("id",&sectorstatus_s::id)
+              .def_readwrite("state",&sectorstatus_s::state)
+              ;    
+
+        class_<cmd_s>("cmd_s")
+              .def_readwrite("target",&cmd_s::target)
+              .def_readwrite("target_id",&cmd_s::target_id)
+              .def_readwrite("cmd", &cmd_s::cmd)
+              .def_readwrite("subcmd1", &cmd_s::subcmd1)
+              .def_readwrite("subcmd2", &cmd_s::subcmd2)
+              ;    
+
+        class_<confirmation_s>("confirmation_s")
+              .def_readwrite("target",&confirmation_s::target)
+              .def_readwrite("target_id",&confirmation_s::target_id)
+              .def_readwrite("cmd", &confirmation_s::cmd)
+              .def_readwrite("subcmd1", &confirmation_s::subcmd1)
+              .def_readwrite("subcmd2", &confirmation_s::subcmd2)
+              .def_readwrite("consumed", &confirmation_s::consumed)
+              ;    
 
         enum_<NRF24L01_Transmit_Status_t>("NRF24L01_TransmitStatus")
         .value("Lost", NRF24L01_Transmit_Status_Lost)
@@ -97,25 +160,25 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
         .export_values()
         ;
 
-        enum_<Target_t>("target")
+        enum_<target_t>("target")
         .value("Generic", Generic)
         .value("Pump", Pump)
         .value("Tank", Tank)
         .value("Plant", Plant)
-        .value("PlantsGroup", PlantsGroup)
+        .value("Sector", Sector)
         .value("PowerSupply", Power)
         .value("System", System)
         .value("All", All)
         .export_values()
         ;
 
-       enum_<Direction_t>("direction")
+       enum_<direction_t>("direction")
         .value("from_rpi_to_irm", RPiToIRM)
         .value("from_irm_to_rpi", IRMToRPi)
         .export_values()
         ;
 
-       enum_<Command_t>("command")
+       enum_<command_t>("command")
         .value("None", None)
         .value("Start", Start)
         .value("Stop", Stop)
