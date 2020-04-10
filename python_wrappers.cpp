@@ -56,7 +56,7 @@ void SetTxAddressPy(NRF24L01 & _nrf_obj, list _addr){
 
 list encodeCmdPy(IrrigationMessage & _irm_obj, cmd_s _cmd){
     list a;
-    array<uint8_t, PAYLOAD_SIZE> buffer;
+    array<uint8_t, 32> buffer;
 
     buffer = _irm_obj.encode(_cmd);
     for(auto &byte : buffer){
@@ -64,6 +64,17 @@ list encodeCmdPy(IrrigationMessage & _irm_obj, cmd_s _cmd){
     }
 
     return a;
+}
+
+
+void setBufferPy(IrrigationMessage & _irm_obj, list _buf, uint8_t _size){
+    uint8_t buffer[32];
+
+    for (uint8_t i = 0; i < _size; ++i){
+        buffer[i] = extract<uint8_t>(_buf[i]);
+    }
+
+    _irm_obj.setBuffer(buffer, _size);
 }
 
 
@@ -95,7 +106,7 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
               .def("decode_sector_message", &IrrigationMessage::decodeSector)
               .def("decode_confirmation", &IrrigationMessage::decodeConfirmation)              
               .def("encode_cmd", encodeCmdPy)
-              .def("set_buffer", &IrrigationMessage::setBuffer)
+              .def("set_buffer", setBufferPy)
               ;
 
         class_<tankstatus_s>("tank_status_s")

@@ -97,9 +97,30 @@ class communicationsThread(threading.Thread):
 
         def run(self):
                 while self._running:
-                        while self._radio1.data_ready() is True:
-                                print(decode_message(wireless_link.retreive_message())) # TODO: assign values to variables
-                                self._new_message_event.set()
+                        while self._radio1.data_ready() == 1:
+                                payload = self._radio1.get_payload()
+                                print(payload)
+                                if payload[0] == wireless.direction.from_irm_to_rpi:  #standard message
+                                        inbound_msg = wireless.IrrigationMessage(wireless.direction.from_irm_to_rpi)
+                                        inbound_msg.set_buffer(payload, RADIO1_PAYLOAD_SIZE)
+                                        if inbound_msg.validate_crc():
+                                                print("validated msg received, todo...")
+                                                self._new_message_event.set()
+                                        else:
+                                                print("crc didn't pass, todo...")
+                                        del inbound_msg
+
+                                elif payload[0] == wireless.direction.from_rpi_to_irm:  #confirmation message
+                                        confirmation_msg = wireless.IrrigationMessage(wireless.direction.from_rpi_to_irm)
+                                        confirmation_msg.set_buffer(payload, RADIO1_PAYLOAD_SIZE)
+                                        if confirmation_msg.validate_crc():
+                                                print(confirmation_msg.decode_confirmation()) #returns class confirmation_s
+                                                self._new_message_event.set()
+                                        else:
+                                                print("crc didn't pass, todo...")
+                                        del confirmation_msg
+                                else:
+                                        print("unknown message")
                         time.sleep(0.05)
 
         def configure_notification_event(self, event):
@@ -112,7 +133,7 @@ class communicationsThread(threading.Thread):
                 print("message sent", payload)
                 self._radio1.power_up_rx()
                 while self._radio1.get_status() != 14:
-                        time.sleep(0.2)
+                        time.sleep(0.05)
                         self._radio1.power_up_rx()
                 print("back to receiver mode")
 
@@ -122,7 +143,7 @@ class communicationsThread(threading.Thread):
 def get_status(event):
         while True:
                 event.set()
-                time.sleep(60)      
+                time.sleep(30)      
 
 
 # RPi->STM32            |0xAA|Target|ID|Cmd|Dummy|CRC|
@@ -152,8 +173,8 @@ if __name__ == "__main__":
 
         wireless_link = communicationsThread(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN,
                                                 RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL,
-                                                wireless.NRF24L01_OutputPower.P0dBm,
-                                                wireless.NRF24L01_DataRate._2Mbps,
+                                                wireless.NRF24L01_OutputPower.M6dBm,
+                                                wireless.NRF24L01_DataRate._1Mbps,
                                                 RADIO1_MY_ADDRESS, RADIO1_TX_ADDRESS)
         wireless_link.configure_notification_event(message_received_event)
         wireless_link.start()
@@ -172,21 +193,34 @@ if __name__ == "__main__":
                                 irrigation_time_event.clear()
                                 tasks = irrigation_scheduler.pick_tasks_from_queue()
                                 for task in tasks:
-                                        id = int(re.findall(r'\d+',task.keys()[0])[0])
-                                        cmd = task.values()[0]
-                                        if cmd is True: 
-                                                tx_payload = encode_message(RADIO1_PAYLOAD_SIZE, wireless.direction.from_rpi_to_irm, wireless.target.PlantsGroup, id, wireless.command.Start)
+                                        outbound_msg = wireless.IrrigationMessage(wireless.direction.from_rpi_to_irm)
+                                        irrigation_cmd = wireless.cmd_s()
+                                        irrigation_cmd.target = wireless.target.Sector
+                                        irrigation_cmd.target_id = int(re.findall(r'\d+',task.keys()[0])[0])
+                                        if task.values()[0]: 
+                                                irrigation_cmd.cmd = wireless.command.Start
+                                                tx_payload = outbound_msg.encode_cmd(irrigation_cmd)
                                         else:
-                                                tx_payload = encode_message(RADIO1_PAYLOAD_SIZE, wireless.direction.from_rpi_to_irm, wireless.target.PlantsGroup, id, wireless.command.Stop)
+                                                irrigation_cmd.cmd = wireless.command.Stop
+                                                tx_payload = outbound_msg.encode_cmd(irrigation_cmd)
                                         wireless_link.send_message(tx_payload)
+                                        del outbound_msg
+                                        del irrigation_cmd
                         else:
                                 print("there's no irrigation event")
 
                         get_status_event.wait(0.5)
                         if get_status_event.is_set():
                                 get_status_event.clear()
-                                tx_payload = encode_message(RADIO1_PAYLOAD_SIZE, wireless.direction.from_rpi_to_irm, wireless.target.All, 0, wireless.command.GetStatus)
+                                outbound_msg = wireless.IrrigationMessage(wireless.direction.from_rpi_to_irm)
+                                status_cmd = wireless.cmd_s()
+                                status_cmd.target = wireless.target.All
+                                status_cmd.target_id = 0
+                                status_cmd.cmd = wireless.command.GetStatus
+                                tx_payload = outbound_msg.encode_cmd(status_cmd)
                                 wireless_link.send_message(tx_payload)
+                                del outbound_msg
+                                del status_cmd
                         else:
                                 print("there's no new messages")
 
