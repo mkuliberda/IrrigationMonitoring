@@ -56,7 +56,7 @@ void SetTxAddressPy(NRF24L01 & _nrf_obj, list _addr){
 
 list encodeCmdPy(IrrigationMessage & _irm_obj, cmd_s _cmd){
     list a;
-    array<uint8_t, 32> buffer;
+    std::array<uint8_t, 32> buffer;
 
     buffer = _irm_obj.encode(_cmd);
     for(auto &byte : buffer){
