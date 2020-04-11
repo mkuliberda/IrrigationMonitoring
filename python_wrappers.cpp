@@ -124,7 +124,7 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
         class_<plant_s>("plant_status_s")
               .def_readwrite("id",&plant_s::id)
               .def_readwrite("health",&plant_s::health)
- //             .def_readwrite("name",&plant_s::name)
+              .def_readwrite("name",&plant_s::name)
               ;  
 
         class_<sectorstatus_s>("sector_status_s")
@@ -171,7 +171,7 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
         .export_values()
         ;
 
-        enum_<target_t>("target")
+        enum_<target_t>("target_t")
         .value("Generic", Generic)
         .value("Pump", Pump)
         .value("Tank", Tank)
@@ -183,13 +183,13 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
         .export_values()
         ;
 
-       enum_<direction_t>("direction")
+       enum_<direction_t>("direction_t")
         .value("from_rpi_to_irm", RPiToIRM)
         .value("from_irm_to_rpi", IRMToRPi)
         .export_values()
         ;
 
-       enum_<command_t>("command")
+       enum_<command_t>("command_t")
         .value("None", None)
         .value("Start", Start)
         .value("Stop", Stop)
