@@ -27,6 +27,7 @@ get_status_event = threading.Event()
 irrigation_time_event = threading.Event()
 
 
+
 class schedulingThread(threading.Thread):
         def __init__(self, schedules):
                 self._schedule = Scheduler.Scheduler(schedules)
@@ -103,22 +104,22 @@ class communicationsThread(threading.Thread):
                 while self._running:
                         while self._radio1.data_ready() == 1:
                                 payload = self._radio1.get_payload()
-                                print("message received", payload)
+                                print("payload ", payload)
                                 if payload[0] == wireless.direction_t.from_irm_to_rpi:  #standard message
                                         msg = wireless.IrrigationMessage(wireless.direction_t.from_irm_to_rpi)
                                         msg.set_buffer(payload, RADIO1_PAYLOAD_SIZE)
                                         if msg.validate_crc():
-                                                print("validated msg received, todo...")
+                                                print("validated msg received ", msg.decode_message())
                                         else:
                                                 print("crc didn't pass, todo...")
                                         del msg
 
                                 elif payload[0] == wireless.direction_t.from_rpi_to_irm:  #confirmation message
-                                        msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
+                                        msg = wireless.IrrigationMessage(wireless.direction_t.from_irm_to_rpi)
                                         msg.set_buffer(payload, RADIO1_PAYLOAD_SIZE)
                                         if msg.validate_crc():
-                                                self._confirmation_msg_queue.append(payload)
-                                                print(self._confirmation_msg_queue[0][0], self._confirmation_msg_queue[0][1])
+                                                #self._confirmation_msg_queue.append(payload)
+                                                print("confirmation ", msg.decode_confirmation())
                                         else:
                                                 print("crc didn't pass, todo...")
                                         del msg
