@@ -113,7 +113,10 @@ class communicationsThread(threading.Thread):
                                         msg = wireless.IrrigationMessage(wireless.direction_t.from_irm_to_rpi)
                                         msg.set_buffer(payload, RADIO1_PAYLOAD_SIZE)
                                         if msg.validate_crc():
-                                                print("valid msg received:", msg.decode_message())
+                                                message_dict = msg.decode_message()
+                                                self._inbound_msg_queue.append(message_dict)
+                                                self._new_message_event.set()
+                                                #print("valid msg received:", message_dict)
                                         else:
                                                 print("crc error")
                                         del msg
@@ -212,6 +215,11 @@ if __name__ == "__main__":
 
         try:
                 while True:
+                        if message_received_event.is_set():
+                                message_received_event.clear()
+                                while wireless_link.get_new_message_count() > 0:
+                                        print(wireless_link.retreive_new_message())
+
                         if irrigation_time_event.is_set():
                                 irrigation_time_event.clear()
                                 tasks = irrigation_scheduler.pick_tasks_from_queue()
