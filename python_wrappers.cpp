@@ -4,6 +4,7 @@
 #include <boost/python/module.hpp>
 #include "WirelessComm/nrf24l01.h"
 #include "WirelessComm/msg_definitions_irrigation.h"
+#include <bitset>
   
 using namespace boost::python;
 
@@ -147,21 +148,20 @@ dict decodePlantPy(IrrigationMessage & _irm_obj){
 dict decodeTankPy(IrrigationMessage & _irm_obj){
 
     struct tankstatus_s tank = _irm_obj.decodeTank();
+    std::bitset<32> errcode = tank.state;
 
     dict tank_dict;
     tank_dict["object"] = target_t::Tank;
 	tank_dict["id"] = tank.id;
-	tank_dict["state"] = tank.state; //TODO: decode state
-
     	/******************************errcodeBitmask****************************************
 	 * *Upper 16 bits										Lower 16 bits
 	 * 00000000 00000000 									00000000 00000000
 	 * |||||||| ||||||||->water temperature too low	 (16)	|||||||| ||||||||->(0)
 	 * |||||||| |||||||-->water temperature too high (17)	|||||||| |||||||-->(1)
 	 * |||||||| ||||||--->water level too low		 (18)	|||||||| ||||||--->(2)
-	 * |||||||| |||||---->							 (19)	|||||||| |||||---->(3)
-	 * |||||||| ||||----->temperature sensor1 invalid(20)	|||||||| ||||----->(4)
-	 * |||||||| |||------>temperature sensor2 invalid(21)	|||||||| |||------>(5)
+	 * |||||||| |||||---->temperature sensor1 invalid(19)	|||||||| |||||---->(3)
+	 * |||||||| ||||----->temperature sensor2 invalid(20)	|||||||| ||||----->(4)
+	 * |||||||| |||------>temperature sensor3 invalid(21)	|||||||| |||------>(5)
 	 * |||||||| ||------->wl sensor1 invalid         (22)	|||||||| ||------->(6)
 	 * |||||||| |-------->wl sensor2 invalid         (23)	|||||||| |-------->(7)
 	 * ||||||||---------->wl sensor3 invalid         (24)	||||||||---------->(8)
@@ -173,6 +173,40 @@ dict decodeTankPy(IrrigationMessage & _irm_obj){
 	 * ||---------------->wl sensor9 invalid         (30)	||---------------->(14)
 	 * |----------------->wl sensor10 invalid        (31)	|----------------->(15)
 	 */
+    for (int i=31; i>=0; --i){
+        /*if (i == 31) tank_dict["wl_sensor10_invalid"]  = errcode[i]==1 ? true : false;
+        if (i == 30) tank_dict["wl_sensor9_invalid"]   = errcode[i]==1 ? true : false; 
+        if (i == 29) tank_dict["wl_sensor8_invalid"]   = errcode[i]==1 ? true : false;
+        if (i == 28) tank_dict["wl_sensor7_invalid"]   = errcode[i]==1 ? true : false;
+        if (i == 27) tank_dict["wl_sensor6_invalid"]   = errcode[i]==1 ? true : false;
+        if (i == 26) tank_dict["wl_sensor5_invalid"]   = errcode[i]==1 ? true : false; 
+        if (i == 25) tank_dict["wl_sensor4_invalid"]   = errcode[i]==1 ? true : false;*/
+        if (i == 24) tank_dict["wl_sensor3_invalid"]   = errcode[i]==1 ? true : false; 
+        if (i == 23) tank_dict["wl_sensor2_invalid"]   = errcode[i]==1 ? true : false;
+        if (i == 22) tank_dict["wl_sensor1_invalid"]   = errcode[i]==1 ? true : false; 
+        /*if (i == 21) tank_dict["temp_sensor3_invalid"] = errcode[i]==1 ? true : false;
+        if (i == 20) tank_dict["temp_sensor2_invalid"] = errcode[i]==1 ? true : false;*/ 
+        if (i == 19) tank_dict["temp_sensor1_invalid"] = errcode[i]==1 ? true : false;
+        if (i == 18) tank_dict["water_level_low"]      = errcode[i]==1 ? true : false; 
+        if (i == 17) tank_dict["water_temp_high"]      = errcode[i]==1 ? true : false;
+        if (i == 16) tank_dict["water_temp_low"]       = errcode[i]==1 ? true : false;
+        /*if (i == 15) tank_dict["free"]                 = errcode[i]==1 ? true : false;
+        if (i == 14) tank_dict["free"]                 = errcode[i]==1 ? true : false; 
+        if (i == 13) tank_dict["free"]                 = errcode[i]==1 ? true : false;
+        if (i == 12) tank_dict["free"]                 = errcode[i]==1 ? true : false; 
+        if (i == 11) tank_dict["free"]                 = errcode[i]==1 ? true : false;
+        if (i == 10) tank_dict["free"]                 = errcode[i]==1 ? true : false; 
+        if (i == 9)  tank_dict["free"]                 = errcode[i]==1 ? true : false;
+        if (i == 8)  tank_dict["free"]                 = errcode[i]==1 ? true : false; 
+        if (i == 7)  tank_dict["free"]                 = errcode[i]==1 ? true : false;
+        if (i == 6)  tank_dict["free"]                 = errcode[i]==1 ? true : false; 
+        if (i == 5)  tank_dict["free"]                 = errcode[i]==1 ? true : false;
+        if (i == 4)  tank_dict["free"]                 = errcode[i]==1 ? true : false; 
+        if (i == 3)  tank_dict["free"]                 = errcode[i]==1 ? true : false;
+        if (i == 2)  tank_dict["free"]                 = errcode[i]==1 ? true : false; 
+        if (i == 1)  tank_dict["free"]                 = errcode[i]==1 ? true : false;
+        if (i == 0)  tank_dict["free"]                 = errcode[i]==1 ? true : false;*/    
+    }
 
     return tank_dict;
 }
