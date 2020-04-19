@@ -148,13 +148,19 @@ dict decodePlantPy(IrrigationMessage & _irm_obj){
 dict decodeBatteryPy(IrrigationMessage & _irm_obj){
 
     struct battery_s battery = _irm_obj.decodeBattery();
+    std::bitset<8> status = battery.status;
 
     dict battery_dict;
     battery_dict["object"] = target_t::Power;
 	battery_dict["id"] = battery.id;
 	battery_dict["percentage"] = battery.percentage;
-	//battery_dict["state"] = battery.state;
-    //battery_dict["errors"] = battery.error;
+    battery_dict["time_remaining_min"] = battery.remaining_time_min;
+    if (status.test(0) == true) battery_dict["state"] = "undetermined";
+    else battery_dict["state"] = status.test(1) == true ? "charging" : "discharging";
+    if (status.test(7) == true) battery_dict["issue1"] = "overvoltage";
+    if (status.test(6) == true) battery_dict["issue2"] = "overdischarge";
+    if (status.test(5) == true) battery_dict["issue3"] = "overloaded";
+    if (status.test(4) == true) battery_dict["issue4"] = "overheated";
 
     return battery_dict;
 }
