@@ -145,6 +145,20 @@ dict decodePlantPy(IrrigationMessage & _irm_obj){
     return plant_dict;
 }
 
+dict decodeBatteryPy(IrrigationMessage & _irm_obj){
+
+    struct battery_s battery = _irm_obj.decodeBattery();
+
+    dict battery_dict;
+    battery_dict["object"] = target_t::Power;
+	battery_dict["id"] = battery.id;
+	battery_dict["percentage"] = battery.percentage;
+	//battery_dict["state"] = battery.state;
+    //battery_dict["errors"] = battery.error;
+
+    return battery_dict;
+}
+
 dict decodeTankPy(IrrigationMessage & _irm_obj){
 
     struct tankstatus_s tank = _irm_obj.decodeTank();
@@ -235,6 +249,11 @@ dict decodeMsgPy(IrrigationMessage & _irm_obj){
         return decodePlantPy(_irm_obj);
         break;
 
+
+        case target_t::Power:
+        return decodeBatteryPy(_irm_obj);
+        break;
+
         default:
         return empty;
         break;
@@ -317,7 +336,7 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
         .value("Tank", Tank)
         .value("Plant", Plant)
         .value("Sector", Sector)
-        .value("PowerSupply", Power)
+        .value("Power", Power)
         .value("System", System)
         .value("All", All)
         .export_values()
