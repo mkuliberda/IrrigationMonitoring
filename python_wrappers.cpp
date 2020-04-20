@@ -133,7 +133,7 @@ dict decodePumpPy(IrrigationMessage & _irm_obj){
 
 dict decodePlantPy(IrrigationMessage & _irm_obj){
 
-    struct plant_s plant = _irm_obj.decodePlant();
+    struct plantstatus_s plant = _irm_obj.decodePlant();
     std::string name(plant.name);
 
     dict plant_dict;
@@ -147,7 +147,7 @@ dict decodePlantPy(IrrigationMessage & _irm_obj){
 
 dict decodeBatteryPy(IrrigationMessage & _irm_obj){
 
-    struct battery_s battery = _irm_obj.decodeBattery();
+    struct batterystatus_s battery = _irm_obj.decodeBattery();
     std::bitset<8> status = battery.status;
 
     dict battery_dict;
@@ -157,10 +157,13 @@ dict decodeBatteryPy(IrrigationMessage & _irm_obj){
     battery_dict["time_remaining_min"] = battery.remaining_time_min;
     if (status.test(0) == true) battery_dict["state"] = "undetermined";
     else battery_dict["state"] = status.test(1) == true ? "charging" : "discharging";
-    if (status.test(7) == true) battery_dict["issue1"] = "overvoltage";
-    if (status.test(6) == true) battery_dict["issue2"] = "overdischarge";
-    if (status.test(5) == true) battery_dict["issue3"] = "overloaded";
-    if (status.test(4) == true) battery_dict["issue4"] = "overheated";
+    battery_dict["issues"] = "";
+    if (status.test(7) == true) battery_dict["issues"] += "overvoltage,";
+    if (status.test(6) == true) battery_dict["issues"] += "overdischarge,";
+    if (status.test(5) == true) battery_dict["issues"] += "overloaded,";
+    if (status.test(4) == true) battery_dict["issues"] += "overheated,";
+    if (status.test(3) == true) battery_dict["issues"] += "calc_error,";
+    if (status.test(2) == true) battery_dict["issues"] += "iface_error,";
 
     return battery_dict;
 }
