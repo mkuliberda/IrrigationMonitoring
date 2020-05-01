@@ -86,7 +86,7 @@ class communicationsThread(threading.Thread):
                 self._inbound_msg_queue = collections.deque()
                 self._awaiting_confirmation_msg_queue = collections.deque()
                 self._refresh_rate_s = refresh_rate_ms/1000.0
-                self._counter = 0
+                self._cmd_retry_counter_s = 0
                 if self._radio1_configured is True: 
                         self._radio1.set_my_address(src_addr)
                         self._radio1.set_tx_address(dest_addr)
@@ -130,14 +130,15 @@ class communicationsThread(threading.Thread):
                                                         del confirmation_dict['consumed']
                                                         for aw_confirmation_dict in list(self._awaiting_confirmation_msg_queue):
                                                                 if aw_confirmation_dict == confirmation_dict:
-                                                                        print("command: ",confirmation_dict['cmd']," confirmed")
+                                                                        print("command: ",confirmation_dict['cmd'],"to ",confirmation_dict['target'],confirmation_dict['target_id']," confirmed")
                                                                         self._awaiting_confirmation_msg_queue.remove(aw_confirmation_dict)
                                         else:
                                                 print("crc error")
                                         del msg
                                 else:
                                         print("unknown message")
-                        
+
+                        self._command_retry()
                         self._send_avbl_messages()
                         time.sleep(self._refresh_rate_s)
 
@@ -157,16 +158,23 @@ class communicationsThread(threading.Thread):
                 self._outbound_msg_queue.append(payload)
 
         def _command_retry(self):  #WIP
-                while len(self._awaiting_confirmation_msg_queue) > 0:
-                        msg_dict = self._awaiting_confirmation_msg_queue.pop()
-                        outbound_msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
-                        irrigation_cmd = wireless.cmd_s()
-                        irrigation_cmd.target = wireless.target_t(msg_dict['target'])
-                        irrigation_cmd.target_id = msg_dict['target_id']
-                        irrigation_cmd.cmd = wireless.command_t(msg_dict['cmd'])
-                        payload = outbound_msg.encode_cmd(irrigation_cmd)
-                        self._outbound_msg_queue.append(payload)
-                        print("command retry:", payload)
+        
+                if self._cmd_retry_counter_s <= 5:
+                        self._cmd_retry_counter_s += self._refresh_rate_s
+                else:
+                        self._cmd_retry_counter_s = 0  
+                        while len(self._awaiting_confirmation_msg_queue) > 0:
+                                msg_dict = self._awaiting_confirmation_msg_queue.pop()
+                                outbound_msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
+                                irrigation_cmd = wireless.cmd_s()
+                                irrigation_cmd.target = wireless.target_t(msg_dict['target'])
+                                irrigation_cmd.target_id = msg_dict['target_id']
+                                irrigation_cmd.cmd = wireless.command_t(msg_dict['cmd'])
+                                payload = outbound_msg.encode_cmd(irrigation_cmd)
+                                self._outbound_msg_queue.append(payload)
+                                print("command retry:", payload)
+                                del outbound_msg
+                                del irrigation_cmd
 
         def _send_avbl_messages(self):
                 while len(self._outbound_msg_queue) > 0:
@@ -177,9 +185,10 @@ class communicationsThread(threading.Thread):
                         while self._radio1.get_transmission_status() == wireless.NRF24L01_TransmitStatus.Sending:
                                 pass     
                         print("command sent:", self._convert_cmd_to_dict(msg))
+                        time.sleep(0.05)
                 self._radio1.power_up_rx()
                 while self._radio1.get_status() != 14:
-                        time.sleep(0.02)
+                        time.sleep(0.005)
                         self._radio1.power_up_rx()
         
         def get_new_message_count(self):
@@ -191,7 +200,7 @@ class communicationsThread(threading.Thread):
 def get_status(event):
         while True:
                 event.set()
-                time.sleep(30)      
+                time.sleep(10)      
 
 
 if __name__ == "__main__":
@@ -202,7 +211,7 @@ if __name__ == "__main__":
 
         wireless_link = communicationsThread(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN,
                                                 RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL,
-                                                wireless.NRF24L01_OutputPower.M6dBm,
+                                                wireless.NRF24L01_OutputPower.P0dBm,
                                                 wireless.NRF24L01_DataRate._1Mbps,
                                                 RADIO1_MY_ADDRESS, RADIO1_TX_ADDRESS,
                                                 COMMS_REFRESH_RATE_MS)

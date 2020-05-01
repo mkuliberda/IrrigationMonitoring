@@ -107,11 +107,12 @@ dict decodeConfirmationPy(IrrigationMessage & _irm_obj){
 dict decodeSectorPy(IrrigationMessage & _irm_obj){
 
     struct sectorstatus_s sector = _irm_obj.decodeSector();
+    std::string plants(sector.plants);
 
     dict sector_dict;
     sector_dict["object"] = target_t::Sector;
 	sector_dict["id"] = sector.id;
-	sector_dict["plants"] = sector.plants;
+	sector_dict["plants"] = plants;
 	sector_dict["state"] = sector.state;
 
     return sector_dict;
@@ -124,7 +125,7 @@ dict decodePumpPy(IrrigationMessage & _irm_obj){
     dict pump_dict;
     pump_dict["object"] = target_t::Pump;
 	pump_dict["id"] = pump.id;
-	pump_dict["state"] = pump.state;                //TODO: decode zipped state
+	pump_dict["state"] = pump.state;                //TODO: decode encoded state
 	pump_dict["forced"] = pump.forced;
 	pump_dict["cmd_consumed"] = pump.cmd_consumed;
 
@@ -245,7 +246,6 @@ dict decodeMsgPy(IrrigationMessage & _irm_obj){
         return decodeSectorPy(_irm_obj);
         break;
 
-
         case target_t::Pump:
         return decodePumpPy(_irm_obj);
         break;
@@ -257,7 +257,6 @@ dict decodeMsgPy(IrrigationMessage & _irm_obj){
         case target_t::Plant:
         return decodePlantPy(_irm_obj);
         break;
-
 
         case target_t::Power:
         return decodeBatteryPy(_irm_obj);
