@@ -211,9 +211,11 @@ dict decodeTankPy(IrrigationMessage & _irm_obj){
         /*if (i == 21) tank_dict["temp_sensor3_invalid"] = errcode[i]==1 ? true : false;
         if (i == 20) tank_dict["temp_sensor2_invalid"] = errcode[i]==1 ? true : false;*/ 
         if (i == 19) tank_dict["temp_sensor1_invalid"] = errcode[i]==1 ? true : false;
+        if (errcode[19] == 0){
+            if (i == 17) tank_dict["water_temp_high"]      = errcode[i]==1 ? true : false;
+            if (i == 16) tank_dict["water_temp_low"]       = errcode[i]==1 ? true : false;
+        }
         if (i == 18) tank_dict["water_level_low"]      = errcode[i]==1 ? true : false; 
-        if (i == 17) tank_dict["water_temp_high"]      = errcode[i]==1 ? true : false;
-        if (i == 16) tank_dict["water_temp_low"]       = errcode[i]==1 ? true : false;
         /*if (i == 15) tank_dict["free"]                 = errcode[i]==1 ? true : false;
         if (i == 14) tank_dict["free"]                 = errcode[i]==1 ? true : false; 
         if (i == 13) tank_dict["free"]                 = errcode[i]==1 ? true : false;

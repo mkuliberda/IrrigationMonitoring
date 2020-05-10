@@ -157,7 +157,7 @@ class communicationsThread(threading.Thread):
         def add_msg_to_queue(self, payload):
                 self._outbound_msg_queue.append(payload)
 
-        def _command_retry(self):  #WIP
+        def _command_retry(self): 
         
                 if self._cmd_retry_counter_s <= 5:
                         self._cmd_retry_counter_s += self._refresh_rate_s
@@ -185,7 +185,7 @@ class communicationsThread(threading.Thread):
                         while self._radio1.get_transmission_status() == wireless.NRF24L01_TransmitStatus.Sending:
                                 pass     
                         print("command sent:", self._convert_cmd_to_dict(msg))
-                        time.sleep(0.05)
+                        time.sleep(0.01)
                 self._radio1.power_up_rx()
                 while self._radio1.get_status() != 14:
                         time.sleep(0.005)
