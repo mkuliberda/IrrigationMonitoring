@@ -108,12 +108,32 @@ dict decodeSectorPy(IrrigationMessage & _irm_obj){
 
     struct sectorstatus_s sector = _irm_obj.decodeSector();
     std::string plants(sector.plants);
+    std::bitset<8> state = sector.state;
 
     dict sector_dict;
     sector_dict["object"] = target_t::Sector;
 	sector_dict["id"] = sector.id;
 	sector_dict["plants"] = plants;
-	sector_dict["state"] = sector.state;
+
+    /*******errcode**********
+	 * 00000000
+	 * ||||||||->(0) 1 if cmd not consumed
+	 * |||||||-->(1) 1 if active, 0 if stopped
+	 * ||||||--->(2) 1 if runtime timeout
+	 * |||||---->(3)
+	 * ||||----->(4)
+	 * |||------>(5) 1 if none of avbl pumps was correctly initialized/created
+	 * ||------->(6) 1 if controller is in wrong or not avbl mode
+	 * |-------->(7) 1 if pumpsCount is 0
+	 *************************/
+    sector_dict["cmd consumed"] = state.test(0) ? false : true;
+    sector_dict["watering active"] = state.test(1) ? true : false;
+    //errors shown dynamically
+    sector_dict["errors"] = "";
+    if (state.test(2) == true) sector_dict["errors"] += "timeout,"; 
+    if (state.test(5) == true) sector_dict["errors"] += "pump invalid,"; 
+    if (state.test(6) == true) sector_dict["errors"] += "mode incorrect,";
+    if (state.test(7) == true) sector_dict["errors"] += "0 pump avbl,";  
 
     return sector_dict;
 }
@@ -173,6 +193,8 @@ dict decodeTankPy(IrrigationMessage & _irm_obj){
 
     struct tankstatus_s tank = _irm_obj.decodeTank();
     std::bitset<32> errcode = tank.state;
+    bool wl_sensor_avbl = false;
+    bool temp_sensor_avbl = false;
 
     dict tank_dict;
     tank_dict["object"] = target_t::Tank;
@@ -198,24 +220,26 @@ dict decodeTankPy(IrrigationMessage & _irm_obj){
 	 * |----------------->wl sensor10 invalid        (31)	|----------------->(15)
 	 */
     for (int i=31; i>=0; --i){
-        /*if (i == 31) tank_dict["wl_sensor10_invalid"]  = errcode[i]==1 ? true : false;
-        if (i == 30) tank_dict["wl_sensor9_invalid"]   = errcode[i]==1 ? true : false; 
-        if (i == 29) tank_dict["wl_sensor8_invalid"]   = errcode[i]==1 ? true : false;
-        if (i == 28) tank_dict["wl_sensor7_invalid"]   = errcode[i]==1 ? true : false;
-        if (i == 27) tank_dict["wl_sensor6_invalid"]   = errcode[i]==1 ? true : false;
-        if (i == 26) tank_dict["wl_sensor5_invalid"]   = errcode[i]==1 ? true : false; 
-        if (i == 25) tank_dict["wl_sensor4_invalid"]   = errcode[i]==1 ? true : false;*/
-        if (i == 24) tank_dict["wl_sensor3_invalid"]   = errcode[i]==1 ? true : false; 
-        if (i == 23) tank_dict["wl_sensor2_invalid"]   = errcode[i]==1 ? true : false;
-        if (i == 22) tank_dict["wl_sensor1_invalid"]   = errcode[i]==1 ? true : false; 
-        /*if (i == 21) tank_dict["temp_sensor3_invalid"] = errcode[i]==1 ? true : false;
-        if (i == 20) tank_dict["temp_sensor2_invalid"] = errcode[i]==1 ? true : false;*/ 
-        if (i == 19) tank_dict["temp_sensor1_invalid"] = errcode[i]==1 ? true : false;
-        if (errcode[19] == 0){
+        if (i == 31) { if (errcode[i]==0) tank_dict["wlsensor10 avbl"] = true;}
+        if (i == 30) { if (errcode[i]==0) tank_dict["wlsensor9 avbl"] = true;}
+        if (i == 29) { if (errcode[i]==0) tank_dict["wlsensor8 avbl"] = true;}
+        if (i == 28) { if (errcode[i]==0) tank_dict["wlsensor7 avbl"] = true;}
+        if (i == 27) { if (errcode[i]==0) tank_dict["wlsensor6 avbl"] = true;}
+        if (i == 26) { if (errcode[i]==0) tank_dict["wlsensor5 avbl"] = true;}
+        if (i == 25) { if (errcode[i]==0) tank_dict["wlsensor4 avbl"] = true;}
+        if (i == 24) { if (errcode[i]==0) tank_dict["wlsensor3 avbl"] = true;}
+        if (i == 23) { if (errcode[i]==0) tank_dict["wlsensor2 avbl"] = true;}
+        if (i == 22) { if (errcode[i]==0) {tank_dict["wlsensor1 avbl"] = true;  wl_sensor_avbl = true;}}
+        if (i == 21) { if (errcode[i]==0) {tank_dict["temp_sensor3 avbl"] = true; temp_sensor_avbl = true;}}
+        if (i == 20) { if (errcode[i]==0) {tank_dict["temp_sensor2 avbl"] = true; temp_sensor_avbl = true;}}
+        if (i == 19) { if (errcode[i]==0) {tank_dict["temp_sensor1 avbl"] = true; temp_sensor_avbl = true;}}
+        if ( wl_sensor_avbl == true){
+            if (i == 18) tank_dict["water_level_low"]      = errcode[i]==1 ? true : false; 
+        }  
+        if (temp_sensor_avbl == true){
             if (i == 17) tank_dict["water_temp_high"]      = errcode[i]==1 ? true : false;
             if (i == 16) tank_dict["water_temp_low"]       = errcode[i]==1 ? true : false;
-        }
-        if (i == 18) tank_dict["water_level_low"]      = errcode[i]==1 ? true : false; 
+        }      
         /*if (i == 15) tank_dict["free"]                 = errcode[i]==1 ? true : false;
         if (i == 14) tank_dict["free"]                 = errcode[i]==1 ? true : false; 
         if (i == 13) tank_dict["free"]                 = errcode[i]==1 ? true : false;

@@ -114,6 +114,18 @@ class communicationsThread(threading.Thread):
                                         msg.set_buffer(payload, RADIO1_PAYLOAD_SIZE)
                                         if msg.validate_crc():
                                                 message_dict = msg.decode_message()
+                                                if message_dict["object"] == wireless.target_t.Sector:
+                                                        if message_dict["watering active"] == False:
+                                                                for aw_confirmation_dict in list(self._awaiting_confirmation_msg_queue):
+                                                                        if aw_confirmation_dict["cmd"] == wireless.command_t.Stop and aw_confirmation_dict["target_id"] == message_dict["id"]:
+                                                                                self._awaiting_confirmation_msg_queue.remove(aw_confirmation_dict)
+                                                                                print("Removed:", aw_confirmation_dict)
+                                                        if message_dict["watering active"] == True:
+                                                                for aw_confirmation_dict in list(self._awaiting_confirmation_msg_queue):
+                                                                        if aw_confirmation_dict["cmd"] == wireless.command_t.Start and aw_confirmation_dict["target_id"] == message_dict["id"]:
+                                                                                self._awaiting_confirmation_msg_queue.remove(aw_confirmation_dict)
+                                                                                print("Removed:", aw_confirmation_dict)
+                                                #check msg if cmd retry can be cleared
                                                 self._inbound_msg_queue.append(message_dict)
                                                 self._new_message_event.set()
                                                 #print("valid msg received:", message_dict)
@@ -165,6 +177,7 @@ class communicationsThread(threading.Thread):
                         self._cmd_retry_counter_s = 0  
                         while len(self._awaiting_confirmation_msg_queue) > 0:
                                 msg_dict = self._awaiting_confirmation_msg_queue.pop()
+                                print("retry msg_dict", msg_dict)
                                 outbound_msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
                                 irrigation_cmd = wireless.cmd_s()
                                 irrigation_cmd.target = wireless.target_t(msg_dict['target'])
