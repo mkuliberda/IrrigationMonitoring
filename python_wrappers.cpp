@@ -126,7 +126,7 @@ dict decodeSectorPy(IrrigationMessage & _irm_obj){
 	 * ||------->(6) 1 if controller is in wrong or not avbl mode
 	 * |-------->(7) 1 if pumpsCount is 0
 	 *************************/
-    sector_dict["cmd consumed"] = state.test(0) ? false : true;
+    //sector_dict["cmd consumed"] = state.test(0) ? false : true; removed as it tells nothing
     sector_dict["watering active"] = state.test(1) ? true : false;
     //errors shown dynamically
     sector_dict["errors"] = "";
@@ -233,14 +233,7 @@ dict decodeTankPy(IrrigationMessage & _irm_obj){
         if (i == 21) { if (errcode[i]==0) {tank_dict["temp_sensor3 avbl"] = true; temp_sensor_avbl = true;}}
         if (i == 20) { if (errcode[i]==0) {tank_dict["temp_sensor2 avbl"] = true; temp_sensor_avbl = true;}}
         if (i == 19) { if (errcode[i]==0) {tank_dict["temp_sensor1 avbl"] = true; temp_sensor_avbl = true;}}
-        if ( wl_sensor_avbl == true){
-            if (i == 18) tank_dict["water_level_low"]      = errcode[i]==1 ? true : false; 
-        }  
-        if (temp_sensor_avbl == true){
-            if (i == 17) tank_dict["water_temp_high"]      = errcode[i]==1 ? true : false;
-            if (i == 16) tank_dict["water_temp_low"]       = errcode[i]==1 ? true : false;
-        }      
-        /*if (i == 15) tank_dict["free"]                 = errcode[i]==1 ? true : false;
+         /*if (i == 15) tank_dict["free"]                 = errcode[i]==1 ? true : false;
         if (i == 14) tank_dict["free"]                 = errcode[i]==1 ? true : false; 
         if (i == 13) tank_dict["free"]                 = errcode[i]==1 ? true : false;
         if (i == 12) tank_dict["free"]                 = errcode[i]==1 ? true : false; 
@@ -256,6 +249,16 @@ dict decodeTankPy(IrrigationMessage & _irm_obj){
         if (i == 2)  tank_dict["free"]                 = errcode[i]==1 ? true : false; 
         if (i == 1)  tank_dict["free"]                 = errcode[i]==1 ? true : false;
         if (i == 0)  tank_dict["free"]                 = errcode[i]==1 ? true : false;*/    
+    }
+
+    if (wl_sensor_avbl == true){
+        tank_dict["water_level"] = errcode[18] == 1 ? "low" : "ok";
+    } 
+    if (temp_sensor_avbl == true){
+        if (errcode[17] == 1 && errcode[16] == 1) tank_dict["water_temp"] = "unknown";
+        else if (errcode[17] == 0 && errcode[16] == 0) tank_dict["water_temp"] = "ok";
+        else if (errcode[17] == 1 && errcode[16] == 0) tank_dict["water_temp"] = "high";
+        else if (errcode[17] == 0 && errcode[16] == 1) tank_dict["water_temp"] = "low";
     }
 
     return tank_dict;
