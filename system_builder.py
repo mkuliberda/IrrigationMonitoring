@@ -1,90 +1,151 @@
 import sys
-from abc import ABCMeta, abstractmethod, abstractproperty
+#from abc import ABCMeta, abstractmethod, abstractproperty
+
+class Watertank():
+    def __init__(self, id):
+        self.__name__ = "Watertank"
+        self.__id = id
+        self.__water_lvl = "unknown"
+        self.__water_temp = "unknown"
+
+    def get_id(self):
+        return self.__id
+
+    def is_valid(self, water_lvl, water_temp="ok"):
+        self.__water_lvl = water_lvl
+        self.__water_temp = water_temp
+        if self.__water_lvl == "ok" and self.__water_temp == "ok":
+            return True
+        else:
+            return False
+
+class Sector():
+    def __init__(self, id):
+        self.__name__ = "Sector"
+        self.__id = id
+        self.__watering_active = False
+        self.__plants = ""
+        self.__errors = ""
+
+    def get_id(self):
+        return self.__id
+
+    def is_watering(self):
+        return self.__watering_active
+
+    def list_plants(self):
+        return self.__plants[:-1].split(",")
+
+    def list_errors(self):
+        return self.__errors[:-1].split(",")
+
+    def update(self, watering_active, plants, errors):
+        self.__watering_active = watering_active
+        self.__plants = plants
+        self.__errors = errors
+
+class Plant():
+    def __init__(self, id):
+        self.__name__ = "Plant"
+        self.__id = id
+        self.__name = "noname"
+        self.__health = 0
+
+    def get_id(self):
+        return self.__id
+
+    def set_name(self, name):
+        self.__name = name
+
+    def get_name(self):
+        return self.__name
+
+    def update(self, health, name=None):
+        if name is not None:
+            self.__name = name
+        self.__health = health
+    
+    def get_health(self):
+        return self.__health
+
+class Battery():
+    def __init__(self, id):
+        self.__name__ = "Battery"
+        self.__id = id
+        self.__percentage = 0
+        self.__time_remaining_min = 0
+        self.__state = "undetermined"
+        self.__errors = ""
+
+    def get_id(self):
+        return self.__id
+
+    def update(self, percentage=None, time_remaining_min=None, state=None, errors=None):
+        if percentage is not None:
+            self.__percentage = percentage
+        if time_remaining_min is not None:
+            self.__time_remaining_min = time_remaining_min
+        if state is not None:
+            self.__state = state
+        if errors is not None:
+            self.__errors = errors
+    
+    def get_percentage(self):
+        return self.__percentage
+
+    def get_time_remaining_min(self):
+        return self.__time_remaining_min
+
+    def get_state(self):
+        return self.__state
+    
+    def list_errors(self):
+        return self.__errors[:-1].split(",")
 
 
-class Abstract:
+#class Abstract:
     '''
     In Python 2.7 ABC class is not available 
     so we need to create new Abstract class from ABCMeta(py 2.7)
     '''
-    __metaclass__ = ABCMeta
+#    __metaclass__ = ABCMeta
 
-class Builder(Abstract):
-    """
-    The Builder interface specifies methods for creating the different parts of
-    the Product objects.
-    """
+class Builder:
 
-    @abstractproperty
-    def product(self):
-        pass
-
-    @abstractmethod
     def produce_sector(self):
         pass
 
-    @abstractmethod
     def produce_watertank(self):
         pass
 
-    @abstractmethod
-    def produce_plant(self):
-        pass
+    #def produce_plant(self):
+    #    pass
     
-    @abstractmethod
-    def produce_battery(self):
-        pass
+    #def produce_battery(self):
+    #    pass
 
 class IrrigationSystemBuilder(Builder):
-    """
-    The Concrete Builder classes follow the Builder interface and provide
-    specific implementations of the building steps. Your program may have
-    several variations of Builders, implemented differently.
-    """
 
-    def __init__(self):
-        """
-        A fresh builder instance should contain a blank product object, which is
-        used in further assembly.
-        """
-        self.reset()
-
-    def reset(self):
-        self._product = IrrigationSystem1()
-
-    @property
-    def product(self):
-        """
-        Concrete Builders are supposed to provide their own methods for
-        retrieving results. That's because various types of builders may create
-        entirely different products that don't follow the same interface.
-        Therefore, such methods cannot be declared in the base Builder interface
-        (at least in a statically typed programming language).
-
-        Usually, after returning the end result to the client, a builder
-        instance is expected to be ready to start producing another product.
-        That's why it's a usual practice to call the reset method at the end of
-        the `getProduct` method body. However, this behavior is not mandatory,
-        and you can make your builders wait for an explicit reset call from the
-        client code before disposing of the previous result.
-        """
-        product = self._product
-        self.reset()
-        return product
+    __s_i = 0
+    __w_i = 0
 
     def produce_sector(self):
-        self._product.add("Sector")
+        sector = Sector(self.__s_i)
+        self.__s_i += 1
+        return sector
 
     def produce_watertank(self):
-        self._product.add("Watertank")
+        watertank = Watertank(self.__w_i)
+        self.__w_i += 1
+        return watertank
 
-    def produce_plant(self):
-        self._product.add("Plant")
+    #def produce_plant(self):
+    #    self._product.add(plant)
 
-    def produce_battery(self):
-        self._product.add("Battery")
+    #def produce_battery(self):
+    #    self._product.add(battery)
 
-class IrrigationSystem1():
+class IrrigationSystem():
     """
     It makes sense to use the Builder pattern only when your products are quite
     complex and require extensive configuration.
@@ -95,53 +156,55 @@ class IrrigationSystem1():
     """
 
     def __init__(self):
-        self.parts = []
+        self.__watertanks = []
+        self.__sectors = []
+        self.__plants = []
+        self.__batteries = []
 
-    def add(self, part):
-        self.parts.append(part)
+    def add(self, entity):
+        if entity.__name__ == "Sector":
+            self.__sectors.append(entity)
 
-    def list_parts(self):
-        print("Product parts: " + ', '.join(self.parts))
+        if entity.__name__ == "Watertank":
+            self.__watertanks.append(entity)
+
+        if entity.__name__ == "Battery":
+            self.__batteries.append(entity)
+
+        if entity.__name__ == "Plant":
+            self.__plants.append(entity)
+
+    def get_sector_plants(self, id):
+        return self.__sectors[id].list_plants()
+
+    def list_entities(self):
+        print("System consists of:\n" + str(len(self.__watertanks)) + " watertanks\n" +\
+         str(len(self.__sectors)) + " sectors\n" +\
+         str(len(self.__plants)) + " plants\n" +\
+         str(len(self.__batteries)) + " batteries")
+
 
 class Director:
-    """
-    The Director is only responsible for executing the building steps in a
-    particular sequence. It is helpful when producing products according to a
-    specific order or configuration. Strictly speaking, the Director class is
-    optional, since the client can control builders directly.
-    """
-
-    def __init__(self) :
-        self._builder = None
-
-    @property
-    def builder(self):
-        return self._builder
-
-    @builder.setter
-    def builder(self, builder):
-        """
-        The Director works with any builder instance that the client code passes
-        to it. This way, the client code may alter the final type of the newly
-        assembled product.
-        """
-        self._builder = builder
-
-    """
-    The Director can construct several product variations using the same
-    building steps.
-    """
+    __builder = None
+  
+    def setBuilder(self, builder):
+        self.__builder = builder
 
     def build_basic_irrigation_system(self):
-        self.builder.produce_watertank()
-        self.builder.produce_sector()
-        self.builder.produce_battery()
+        basic_system = IrrigationSystem()
+        sector = self.__builder.produce_sector()
+        basic_system.add(sector)
+        sector = self.__builder.produce_sector()
+        basic_system.add(sector)
+
+        return basic_system
 
     def build_full_irrigation_system(self):
-        self.builder.produce_watertank()
-        self.builder.produce_sector()
-        self.builder.produce_battery()
-        self.builder.produce_plant()
+        pass
+        #self.builder.produce_watertank()
+        #self.builder.produce_sector()
+        #self.builder.produce_battery()
+        #self.builder.produce_plant()
 
 if __name__ == "__main__":
 
@@ -154,13 +217,14 @@ if __name__ == "__main__":
     """
 
     director = Director()
-    builder = IrrigationSystemBuilder()
-    director.builder = builder
+    system_builder = IrrigationSystemBuilder()
+    director.setBuilder(system_builder)
 
     print("Standard basic product: ")
-    director.build_basic_irrigation_system()
-    builder.product.list_parts()
+    system1 = director.build_basic_irrigation_system()
+    system1.list_entities()
+    print(system1.get_sector_plants(1))
 
-    print("Standard full featured product: ")
-    director.build_full_irrigation_system()
-    builder.product.list_parts()
+    #print("Standard full featured product: ")
+    #director.build_full_irrigation_system()
+    #builder.product.list_parts()
