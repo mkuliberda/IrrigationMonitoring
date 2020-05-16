@@ -353,9 +353,9 @@ BOOST_PYTHON_MODULE(wireless_comm_lib)
         ;
 
        enum_<NRF24L01_DataRate_t>("NRF24L01_DataRate")
-        .value("_2Mbps", NRF24L01_DataRate_2M)
-        .value("_1Mbps", NRF24L01_DataRate_1M)
-        .value("_250kbps", NRF24L01_DataRate_250k)
+        .value("R2Mbps", NRF24L01_DataRate_2M)
+        .value("R1Mbps", NRF24L01_DataRate_1M)
+        .value("R250kbps", NRF24L01_DataRate_250k)
         .export_values()
         ;
 

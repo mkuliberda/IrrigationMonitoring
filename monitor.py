@@ -236,7 +236,7 @@ if __name__ == "__main__":
         wireless_link = communicationsThread(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN,
                                                 RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL,
                                                 wireless.NRF24L01_OutputPower.P0dBm,
-                                                wireless.NRF24L01_DataRate._1Mbps,
+                                                wireless.NRF24L01_DataRate.R1Mbps,
                                                 RADIO1_MY_ADDRESS, RADIO1_TX_ADDRESS,
                                                 COMMS_REFRESH_RATE_MS)
         wireless_link.configure_new_message_event(message_received_event)
