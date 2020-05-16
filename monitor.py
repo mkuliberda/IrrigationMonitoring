@@ -4,6 +4,8 @@ import Scheduler
 import threading
 import re
 import collections
+import sys
+import SystemBuilder as builder
 
 
 RADIO1_CE_PIN = 26   # BCM pins numbering
@@ -26,7 +28,6 @@ lock = threading.RLock()
 message_received_event = threading.Event()
 get_status_event = threading.Event()
 irrigation_time_event = threading.Event()
-
 
 
 class schedulingThread(threading.Thread):
@@ -213,10 +214,25 @@ class communicationsThread(threading.Thread):
 def get_status(event):
         while True:
                 event.set()
-                time.sleep(10)      
+                time.sleep(10)    
 
 
 if __name__ == "__main__":
+        print(sys.version)
+
+        print("Building custom system...")
+        director = builder.Director()
+        system_builder = builder.IrrigationSystemBuilder()
+        director.setBuilder(system_builder)
+
+        system1 = director.build_custom_irrigation_system()
+        system1.print_entities()
+        print(system1.get_sector_plants(0))
+        entity_list = system1.list_entities()
+        for entity in entity_list:
+                if entity.get_type() == wireless.target_t.Sector:
+                        print("Sector found")
+      
 
         irrigation_scheduler = schedulingThread(PLANTS_SCHEDULES, SCHEDULE_REFRESH_RATE_MS)
         irrigation_scheduler.configure_notification_event(irrigation_time_event)
@@ -240,7 +256,14 @@ if __name__ == "__main__":
                         if message_received_event.is_set():
                                 message_received_event.clear()
                                 while wireless_link.get_new_message_count() > 0:
-                                        print(wireless_link.retreive_new_message())
+                                        msg = wireless_link.retreive_new_message()
+                                        #if msg['object'] == wireless.target_t.Tank:
+                                        #        watertank = Watertank(msg['id'])
+                                        #        watertank.update()
+                                        #        watertank['water_level'] == msg['water_level']
+                                        #if msg['object'] == wireless.target_t.Sector:
+                                        #        pass
+                                        print(msg)
 
                         if irrigation_time_event.is_set():
                                 irrigation_time_event.clear()
