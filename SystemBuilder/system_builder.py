@@ -17,9 +17,11 @@ class Watertank():
     def get_type(self) -> WirelessTarget:
         return self.__type
 
-    def is_valid(self, water_lvl: str, water_temp: str="ok") -> bool:
+    def update(self, water_lvl: str, water_temp: str="ok") -> None:
         self.__water_lvl = water_lvl
         self.__water_temp = water_temp
+
+    def is_valid(self) -> bool:
         if self.__water_lvl == "ok" and self.__water_temp == "ok":
             return True
         else:
@@ -196,8 +198,58 @@ class IrrigationSystem():
         if entity.get_type() == wireless.target_t.Plant:
             self.__plants.append(entity)
 
-    def get_sector_plants(self, sector_id: int) -> List[str]:
+    def list_sectors(self) -> list:
+        return self.__sectors
+
+    def list_watertanks(self) -> list:
+        return self.__watertanks
+
+    def list_plants(self) -> list:
+        return self.__plants
+
+    def list_batteries(self) -> list:
+        return self.__batteries
+    
+    def update_sector(self, sector_id: int, watering_active: bool, plants: str, errors: str) -> bool:
+        if sector_id >= 0 and sector_id < len(self.__sectors):
+            self.__sectors[sector_id].update(watering_active, plants, errors)
+            return True
+        else:
+            return False
+
+    def update_watertank(self, tank_id: int, water_level: str, water_temp: str="unknown") -> bool:
+        if tank_id >= 0 and tank_id < len(self.__watertanks):
+            if water_temp == "unknown":
+                self.__watertanks[tank_id].update(water_level)
+            else:
+                self.__watertanks[tank_id].update(water_level, water_temp)
+            return True
+        else:
+            return False
+    
+    def update_plant(self, plant_id: int, health: float, name: str="unknown") -> bool:
+        if plant_id >= 0 and plant_id < len(self.__plants):
+            if name == "unknown":
+                self.__plants[plant_id].update(health)
+            else:
+                self.__plants[plant_id].update(health, name)
+            return True
+        else:
+            return False
+    
+    def update_battery(self, battery_id: int, percentage: int=None, time_remaining_min: int=None, state: str=None, errors: str=None) -> bool:
+        if battery_id >= 0 and battery_id < len(self.__batteries):
+            self.__batteries[battery_id].update(percentage, time_remaining_min, state, errors)
+            return True
+        else:
+            return False
+
+    def list_plants_by_sector(self, sector_id: int) -> List[str]:
         return self.__sectors[sector_id].list_plants()
+        
+    def is_watertank_valid(self, tank_id: int) -> bool:
+        if tank_id >= 0 and tank_id < len(self.__watertanks):
+            return self.__watertanks[tank_id].is_valid()
 
     def print_entities(self) -> None:
         print("System consists of:\n" + \
@@ -206,7 +258,7 @@ class IrrigationSystem():
           "plants: " + str(len(self.__plants)) + "\n" +\
           "batteries: " + str(len(self.__batteries)))
 
-    def list_entities(self) -> list:
+    def list_all_entities(self) -> list:
         alist = []
         for sector in self.__sectors:
             alist.append(sector)

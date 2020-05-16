@@ -127,7 +127,7 @@ dict decodeSectorPy(IrrigationMessage & _irm_obj){
 	 * |-------->(7) 1 if pumpsCount is 0
 	 *************************/
     //sector_dict["cmd consumed"] = state.test(0) ? false : true; removed as it tells nothing
-    sector_dict["watering active"] = state.test(1) ? true : false;
+    sector_dict["watering_active"] = state.test(1) ? true : false;
     //errors shown dynamically
     sector_dict["errors"] = "";
     if (state.test(2) == true) sector_dict["errors"] += "timeout,"; 

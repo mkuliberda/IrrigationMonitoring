@@ -116,12 +116,12 @@ class communicationsThread(threading.Thread):
                                         if msg.validate_crc():
                                                 message_dict = msg.decode_message()
                                                 if message_dict["object"] == wireless.target_t.Sector:
-                                                        if message_dict["watering active"] == False:
+                                                        if message_dict["watering_active"] == False:
                                                                 for aw_confirmation_dict in list(self._awaiting_confirmation_msg_queue):
                                                                         if aw_confirmation_dict["cmd"] == wireless.command_t.Stop and aw_confirmation_dict["target_id"] == message_dict["id"]:
                                                                                 self._awaiting_confirmation_msg_queue.remove(aw_confirmation_dict)
                                                                                 print("Removed:", aw_confirmation_dict)
-                                                        if message_dict["watering active"] == True:
+                                                        if message_dict["watering_active"] == True:
                                                                 for aw_confirmation_dict in list(self._awaiting_confirmation_msg_queue):
                                                                         if aw_confirmation_dict["cmd"] == wireless.command_t.Start and aw_confirmation_dict["target_id"] == message_dict["id"]:
                                                                                 self._awaiting_confirmation_msg_queue.remove(aw_confirmation_dict)
@@ -225,13 +225,8 @@ if __name__ == "__main__":
         system_builder = builder.IrrigationSystemBuilder()
         director.setBuilder(system_builder)
 
-        system1 = director.build_custom_irrigation_system()
+        system1 = director.build_full_irrigation_system()
         system1.print_entities()
-        print(system1.get_sector_plants(0))
-        entity_list = system1.list_entities()
-        for entity in entity_list:
-                if entity.get_type() == wireless.target_t.Sector:
-                        print("Sector found")
       
 
         irrigation_scheduler = schedulingThread(PLANTS_SCHEDULES, SCHEDULE_REFRESH_RATE_MS)
@@ -257,13 +252,27 @@ if __name__ == "__main__":
                                 message_received_event.clear()
                                 while wireless_link.get_new_message_count() > 0:
                                         msg = wireless_link.retreive_new_message()
-                                        #if msg['object'] == wireless.target_t.Tank:
-                                        #        watertank = Watertank(msg['id'])
-                                        #        watertank.update()
-                                        #        watertank['water_level'] == msg['water_level']
-                                        #if msg['object'] == wireless.target_t.Sector:
-                                        #        pass
-                                        print(msg)
+                                        #print(msg)
+                                        if msg['object'] == wireless.target_t.Tank:
+                                                if 'water_temp' in msg.keys():
+                                                        system1.update_watertank(msg['id'], msg['water_level'], msg['water_temp'])
+                                                else:
+                                                        system1.update_watertank(msg['id'], msg['water_level'])   
+                                        if msg['object'] == wireless.target_t.Plant:
+                                                system1.update_plant(msg['id'], msg['health'], msg['name'])
+                                        if msg['object'] == wireless.target_t.Sector:
+                                                system1.update_sector(msg['id'], msg['watering_active'], msg['plants'], msg['errors'])
+                                        if msg['object'] == wireless.target_t.Power:
+                                                system1.update_battery(msg['id'], msg['percentage'], msg['time_remaining_min'], msg['state'], msg['issues'])
+                                                
+                                for plant in system1.list_plants():
+                                        print(plant.get_type(), plant.get_id(), "name:", plant.get_name(), "health:", plant.get_health())
+                                for battery in system1.list_batteries():
+                                        print(battery.get_type(), battery.get_id(), battery.get_percentage(), "%", battery.get_state(), "errors:", battery.list_errors())
+                                for sector in system1.list_sectors():
+                                        print(sector.get_type(), sector.get_id(), "watering:", sector.is_watering(), "plants:", sector.list_plants(), "errors:", sector.list_errors())
+                                for watertank in system1.list_watertanks():
+                                        print(watertank.get_type(), watertank.get_id(), "valid:", watertank.is_valid())
 
                         if irrigation_time_event.is_set():
                                 irrigation_time_event.clear()
