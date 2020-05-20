@@ -281,8 +281,8 @@ if __name__ == "__main__":
                                         outbound_msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
                                         irrigation_cmd = wireless.cmd_s()
                                         irrigation_cmd.target = wireless.target_t.Sector
-                                        irrigation_cmd.target_id = int(re.findall(r'\d+',task.keys()[0])[0])
-                                        if task.values()[0]: 
+                                        irrigation_cmd.target_id = int(re.findall(r'\d+',str(list(task.keys())[0]))[0])
+                                        if list(task.values())[0]: 
                                                 irrigation_cmd.cmd = wireless.command_t.Start
                                                 tx_payload = outbound_msg.encode_cmd(irrigation_cmd)
                                         else:
