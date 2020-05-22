@@ -1,6 +1,7 @@
 import sys
 from typing import TypeVar, List, Union
 import wireless_comm_lib as wireless
+from datetime import datetime
 
 WirelessTarget = TypeVar(wireless.target_t)
 
@@ -10,6 +11,7 @@ class Watertank():
         self.__id = id
         self.__water_lvl = "unknown"
         self.__water_temp = "unknown"
+        self.__last_update = None
 
     def get_id(self) -> int:
         return self.__id
@@ -17,7 +19,11 @@ class Watertank():
     def get_type(self) -> WirelessTarget:
         return self.__type
 
+    def get_last_update(self):
+        return self.__last_update
+
     def update(self, water_lvl: str, water_temp: str="ok") -> None:
+        self.__last_update = datetime.now()
         self.__water_lvl = water_lvl
         self.__water_temp = water_temp
 
@@ -34,12 +40,16 @@ class Sector():
         self.__watering_active = False
         self.__plants = ""
         self.__errors = ""
+        self.__last_update = None
 
     def get_id(self) -> int:
         return self.__id
 
     def get_type(self) -> WirelessTarget:
         return self.__type
+
+    def get_last_update(self):
+        return self.__last_update   
 
     def is_watering(self) -> bool:
         return self.__watering_active
@@ -51,6 +61,7 @@ class Sector():
         return self.__errors[:-1].split(",")
 
     def update(self, watering_active: bool, plants: str, errors: str) -> None:
+        self.__last_update = datetime.now()
         self.__watering_active = watering_active
         self.__plants = plants
         self.__errors = errors
@@ -61,12 +72,16 @@ class Plant():
         self.__id = id
         self.__name = "noname"
         self.__health = 0
+        self.__last_update = None
 
     def get_id(self) -> int:
         return self.__id
 
     def get_type(self) -> WirelessTarget:
         return self.__type
+
+    def get_last_update(self):
+        return self.__last_update
 
     def set_name(self, name: str) -> None:
         self.__name = name
@@ -75,6 +90,7 @@ class Plant():
         return self.__name
 
     def update(self, health: float, name: str=None) -> None:
+        self.__last_update = datetime.now()
         if name is not None:
             self.__name = name
         self.__health = health
@@ -90,6 +106,7 @@ class Battery():
         self.__time_remaining_min = 0
         self.__state = "undetermined"
         self.__errors = ""
+        self.__last_update = None
 
     def get_id(self) -> int:
         return self.__id
@@ -97,7 +114,11 @@ class Battery():
     def get_type(self) -> WirelessTarget:
         return self.__type
 
+    def get_last_update(self):
+        return self.__last_update
+
     def update(self, percentage: int=None, time_remaining_min: int=None, state: str=None, errors: str=None) -> None:
+        self.__last_update = datetime.now()
         if percentage is not None:
             self.__percentage = percentage
         if time_remaining_min is not None:

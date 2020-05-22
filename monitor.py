@@ -266,13 +266,13 @@ if __name__ == "__main__":
                                                 system1.update_battery(msg['id'], msg['percentage'], msg['time_remaining_min'], msg['state'], msg['issues'])
                                                 
                                 for plant in system1.list_plants():
-                                        print(plant.get_type(), plant.get_id(), "name:", plant.get_name(), "health:", plant.get_health())
+                                        print(plant.get_last_update(), plant.get_type(), plant.get_id(), "name:", plant.get_name(), "health:", plant.get_health())
                                 for battery in system1.list_batteries():
-                                        print(battery.get_type(), battery.get_id(), battery.get_percentage(), "%", battery.get_state(), "errors:", battery.list_errors())
+                                        print(battery.get_last_update(), battery.get_type(), battery.get_id(), battery.get_percentage(), "%", battery.get_state(), "errors:", battery.list_errors())
                                 for sector in system1.list_sectors():
-                                        print(sector.get_type(), sector.get_id(), "watering:", sector.is_watering(), "plants:", sector.list_plants(), "errors:", sector.list_errors())
+                                        print(sector.get_last_update(), sector.get_type(), sector.get_id(), "watering:", sector.is_watering(), "plants:", sector.list_plants(), "errors:", sector.list_errors())
                                 for watertank in system1.list_watertanks():
-                                        print(watertank.get_type(), watertank.get_id(), "valid:", watertank.is_valid())
+                                        print(watertank.get_last_update(), watertank.get_type(), watertank.get_id(), "valid:", watertank.is_valid())
 
                         if irrigation_time_event.is_set():
                                 irrigation_time_event.clear()
