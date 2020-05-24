@@ -4,19 +4,28 @@
     <title>Irrigation monitor</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 </head>
 <body>
 
     <div class="container-fluid">
         <h2 style="text-align:center;">Irrigation Monitoring & Control</h2>
         <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#home"><font size="4">Home</font></a></li>
-            <li><a data-toggle="tab" href="#irrigation"><font size="4">Irrigation</font></a></li>
-            <li><a data-toggle="tab" href="#plants"><font size="4">Plants</font></a></li>
-            <li><a data-toggle="tab" href="#system"><font size="4">System</font></a></li>
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#home">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#irrigation">Irrigation</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#plants">Plants</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#system">System</a>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -37,53 +46,63 @@
                 </div>
             </div>
             <div id="irrigation" class="tab-pane fade">
-                <br />
-                <div class="panel-group">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">Sector 0</div>
-                        <div class="panel-body">
-                            Plants:<br>
-                            Watering: Active<br>
-                            Errors: <br>
-                            Last update:
+                <br>
+                <div class="card-deck">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Sector 0</h5>
+                            <p class="card-text">
+                                Plants: <br>
+                                Activity: <br>
+                                Errors:
+                            </p>
                         </div>
+                        <div class="card-footer">Updated: 10s ago</div>
                     </div>
-                    <div class="panel panel-info">
-                        <div class="panel-heading">Sector 1</div>
-                        <div class="panel-body">
-                            Plants:<br>
-                            Watering: Active<br>
-                            Errors: <br>
-                            Last update:
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Sector 1</h5>
+                            <p class="card-text">
+                                Plants: <br>
+                                Activity: <br>
+                                Errors:
+                            </p>
                         </div>
+                        <div class="card-footer">Updated: 10s ago</div>
                     </div>
-                    <div class="panel panel-info">
-                        <div class="panel-heading">Sector 2</div>
-                        <div class="panel-body">
-                            Plants:<br>
-                            Watering: Active<br>
-                            Errors: <br>
-                            Last update:
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Sector 2</h5>
+                            <p class="card-text">
+                                Plants: <br>
+                                Activity: <br>
+                                Errors:
+                            </p>
                         </div>
+                        <div class="card-footer">Updated: 10s ago</div>
                     </div>
-                    <div class="panel panel-info">
-                        <div class="panel-heading">Sector 3</div>
-                        <div class="panel-body">
-                            Plants:<br>
-                            Watering: Active<br>
-                            Errors: <br>
-                            Last update:
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Sector 3</h5>
+                            <p class="card-text">
+                                Plants: <br>
+                                Activity: <br>
+                                Errors:
+                            </p>
                         </div>
+                        <div class="card-footer">Updated: 10s ago</div>
                     </div>
                 </div>
-                <div class="panel-group">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">Watertank</div>
-                        <div class="panel-body">
-                            Water level:<br>
-                            Water temperature:<br>
-                            Last update:
+                <br />
+                <div class="card-deck">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Watertank 0</h5>
+                            <p class="card-text"> Temp, water level todo as circular progress bar<br />
+                            Errors:
+                            </p>
                         </div>
+                        <div class="card-footer">Updated: 10s ago</div>
                     </div>
                 </div>
             </div>
