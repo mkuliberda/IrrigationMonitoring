@@ -4,14 +4,63 @@
     <title>Irrigation monitor</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <link href="progress-bar.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        $(function () {
+            $(".progress").each(function () {
+                var value = $(this).attr('data-value');
+                var left = $(this).find('.progress-left .progress-bar');
+                var right = $(this).find('.progress-right .progress-bar');
+
+                if (value > 0) {
+                    if (value <= 50) {
+                        right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                    } else {
+                        right.css('transform', 'rotate(180deg)')
+                        left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                    }
+                }
+
+            })
+
+            function percentageToDegrees(percentage) {
+                return percentage / 100 * 360
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $(".temperature").each(function () {
+                var value = $(this).attr('data-value');
+                var left = $(this).find('.temperature-left .progress-bar');
+                var right = $(this).find('.temperature-right .progress-bar');
+
+                if (value > -40) {
+                    if (value <= 20) {
+                        right.css('transform', 'rotate(' + temperatureToDegrees(value) + 'deg)')
+                    } else {
+                        right.css('transform', 'rotate(180deg)')
+                        left.css('transform', 'rotate(' + temperatureToDegrees(value - 20) + 'deg)')
+                    }
+                }
+
+            })
+
+            function temperatureToDegrees(temperature) {
+                return temperature / 120 * 360
+            }
+        });
+    </script>
+
 </head>
 <body>
 
-    <div class="container-fluid">
+<div class="container-fluid">
         <h2 style="text-align:center;">Irrigation Monitoring & Control</h2>
         <ul class="nav nav-tabs">
             <li class="nav-item">
@@ -94,12 +143,52 @@
                     </div>
                 </div>
                 <br />
-                <div class="card-deck">
+                <div class="card-columns">
                     <div class="card bg-light">
                         <div class="card-body">
                             <h5 class="card-title">Watertank 0</h5>
-                            <p class="card-text"> Temp, water level todo as circular progress bar<br />
-                            Errors:
+                            <p class="card-text">
+                                <div class="row mt-4">
+                                    <div class="col-6">
+                                        <!--Progress bar-->
+                                        <div class="progress mx-auto" data-value='60'>
+                                            <span class="progress-left">
+                                                <span class="progress-bar border-primary"></span>
+                                            </span>
+                                            <span class="progress-right">
+                                                <span class="progress-bar border-primary"></span>
+                                            </span>
+                                            <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">60<sup class="small">%</sup></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <!--Progress bar-->
+                                        <div class="progress mx-auto" data-value='15'>
+                                            <span class="progress-left">
+                                                <span class="progress-bar border-primary"></span>
+                                            </span>
+                                            <span class="progress-right">
+                                                <span class="progress-bar border-primary"></span>
+                                            </span>
+                                            <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="h2 font-weight-bold">15<sup class="small">C</sup></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                    <!-- Demo info -->
+                                    <div class="row text-center mt-4">
+                                        <div class="col-6">
+                                            <div class="h6 mb-0">Water level</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h6 mb-0">Temperature</div>
+                                        </div>
+                                    </div>
+                                <br/>
+                                <div class="h6 mb-0">Errors:</div>
                             </p>
                         </div>
                         <div class="card-footer">Updated: 10s ago</div>
@@ -109,95 +198,257 @@
             <div id="plants" class="tab-pane fade">
                 <br>
                 <div class="container">
-                    <div class="panel-group">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">Channel 1</div>
-                            <div class="panel-body">
-                                Name:<br>
-                                Soil moisture:<br>
-                                Last update:
-                            </div>
-                        </div>
-                        <div class="panel panel-info">
-                            <div class="panel-heading">Channel 2</div>
-                            <div class="panel-body">
-                                Name:<br>
-                                Soil moisture:<br>
-                                Last update:
-                            </div>
-                        </div>
-                        <div class="panel panel-info">
-                            <div class="panel-heading">Channel 3</div>
-                            <div class="panel-body">
-                                Name:<br>
-                                Soil moisture:<br>
-                                Last update:
-                            </div>
-                        </div>
-                        <div class="panel panel-info">
-                            <div class="panel-heading">Channel 4</div>
-                            <div class="panel-body">
-                                Name:<br>
-                                Soil moisture:<br>
-                                Last update:
-                            </div>
-                        </div>
-                        <div class="panel panel-info">
-                            <div class="panel-heading">Channel 5</div>
-                            <div class="panel-body">
-                                Name:<br>
-                                Soil moisture:<br>
-                                Last update:
-                            </div>
-                        </div>
-                        <div class="panel panel-info">
-                            <div class="panel-heading">Channel 6</div>
-                            <div class="panel-body">
-                                Name:<br>
-                                Soil moisture:<br>
-                                Last update:
-                            </div>
-                        </div>
-                        <div class="panel panel-info">
-                            <div class="panel-heading">Channel 7</div>
-                            <div class="panel-body">
-                                Name:<br>
-                                Soil moisture:<br>
-                                Last update:
-                            </div>
-                        </div>
-                        <div class="panel panel-info">
-                            <div class="panel-heading">Channel 8</div>
-                            <div class="panel-body">
-                                Name:<br>
-                                Last update:<br>
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width:30%">
-                                        Soil moisture 30%
+                    <div class="card-columns">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Channel 1</h5>
+                                <p class="card-text">
+                                    <!--Progress bar-->
+                                    <div class="progress mx-auto" data-value='80'>
+                                        <span class="progress-left">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <span class="progress-right">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="h2 font-weight-bold">80<sup class="small">%</sup></div>
+                                        </div>
                                     </div>
-                                </div>
+                                    <!-- Demo info -->
+                                    <div class="row text-center mt-4">
+                                        <div class="col-6 border-right">
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                        </div>
+                                    </div>
+                                </p>
                             </div>
+                            <div class="card-footer">Updated: 10s ago</div>
                         </div>
-
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Channel 2</h5>
+                                <p class="card-text">
+                                    <!--Progress bar-->
+                                    <div class="progress mx-auto" data-value='30'>
+                                        <span class="progress-left">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <span class="progress-right">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="h2 font-weight-bold">30<sup class="small">%</sup></div>
+                                        </div>
+                                    </div>
+                                    <!-- Demo info -->
+                                    <div class="row text-center mt-4">
+                                        <div class="col-6 border-right">
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                            <div class="card-footer">Updated: 10s ago</div>
+                        </div>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Channel 3</h5>
+                                <p class="card-text">
+                                    <!--Progress bar-->
+                                    <div class="progress mx-auto" data-value='30'>
+                                        <span class="progress-left">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <span class="progress-right">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="h2 font-weight-bold">30<sup class="small">%</sup></div>
+                                        </div>
+                                    </div>
+                                    <!-- Demo info -->
+                                    <div class="row text-center mt-4">
+                                        <div class="col-6 border-right">
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                            <div class="card-footer">Updated: 10s ago</div>
+                        </div>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Channel 4</h5>
+                                <p class="card-text">
+                                    <!--Progress bar-->
+                                    <div class="progress mx-auto" data-value='30'>
+                                        <span class="progress-left">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <span class="progress-right">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="h2 font-weight-bold">30<sup class="small">%</sup></div>
+                                        </div>
+                                    </div>
+                                    <!-- Demo info -->
+                                    <div class="row text-center mt-4">
+                                        <div class="col-6 border-right">
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                            <div class="card-footer">Updated: 10s ago</div>
+                        </div>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Channel 5</h5>
+                                <p class="card-text">
+                                    <!--Progress bar-->
+                                    <div class="progress mx-auto" data-value='80'>
+                                        <span class="progress-left">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <span class="progress-right">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="h2 font-weight-bold">80<sup class="small">%</sup></div>
+                                        </div>
+                                    </div>
+                                    <!-- Demo info -->
+                                    <div class="row text-center mt-4">
+                                        <div class="col-6 border-right">
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                            <div class="card-footer">Updated: 10s ago</div>
+                        </div>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Channel 6</h5>
+                                <p class="card-text">
+                                    <!--Progress bar-->
+                                    <div class="progress mx-auto" data-value='80'>
+                                        <span class="progress-left">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <span class="progress-right">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="h2 font-weight-bold">50<sup class="small">%</sup></div>
+                                        </div>
+                                    </div>
+                                    <!-- Demo info -->
+                                    <div class="row text-center mt-4">
+                                        <div class="col-6 border-right">
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                            <div class="card-footer">Updated: 10s ago</div>
+                        </div>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Channel 7</h5>
+                                <p class="card-text">
+                                    <!--Progress bar-->
+                                    <div class="progress mx-auto" data-value='80'>
+                                        <span class="progress-left">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <span class="progress-right">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="h2 font-weight-bold">80<sup class="small">%</sup></div>
+                                        </div>
+                                    </div>
+                                    <!-- Demo info -->
+                                    <div class="row text-center mt-4">
+                                        <div class="col-6 border-right">
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                            <div class="card-footer">Updated: 10s ago</div>
+                        </div>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Channel 8</h5>
+                                <p class="card-text">
+                                    <!--Progress bar-->
+                                    <div class="progress mx-auto" data-value='10'>
+                                        <span class="progress-left">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <span class="progress-right">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="h2 font-weight-bold">10<sup class="small">%</sup></div>
+                                        </div>
+                                    </div>
+                                    <!-- Demo info -->
+                                    <div class="row text-center mt-4">
+                                        <div class="col-6 border-right">
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                            <div class="card-footer">Updated: 10s ago</div>
+                        </div>
                     </div>
                 </div>
 
             </div>
             <div id="system" class="tab-pane fade">
                 <br>
-                <p style="text-align:center;"><font size="4">You can check system status here</font></p>
-                <div class="panel-group">
-                    <div class="panel panel-info">
-                        <div class="panel-heading">Battery</div>
-                        <div class="panel-body">
-                            State:<br>
-                            Errors:<br>
-                            Last update:
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width:10%">
-                                Charged 10%
+                <div class="container">
+                    <div class="card-columns">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Battery 1</h5>
+                                <p class="card-text">
+                                    State: <br>
+                                    Errors: <br>
+                                    Progress bar todo
+                                </p>
                             </div>
+                            <div class="card-footer">Updated: 10s ago</div>
                         </div>
                     </div>
                 </div>
