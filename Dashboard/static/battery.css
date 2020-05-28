@@ -1,0 +1,31 @@
+.battery {
+  padding: 10px 10px;
+  width: 340px;
+  border: solid thin #FFF;
+  position: relative;
+}
+
+.battery:after {
+  content: " ";
+  top: 30px;
+  right: -7px;
+  height: 20px;
+  width: 7px;
+  position: absolute;
+  background: #FFF;
+}
+
+.bar {
+  cursor: pointer;
+  display: inline-block;
+  width: 0;
+  border: solid thin rgba(255, 255, 255, .1);
+  padding: 14px;
+  height: 30px;
+  background: transparent;
+  transition: background 1s;
+}
+
+.bar.active {
+  background: limegreen;
+}

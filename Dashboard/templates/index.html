@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
     {% block styles %}
     <link href="{{ url_for('static', filename='progress-bar.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='battery.css') }}" rel="stylesheet">
     {% endblock %}
     <script type="text/javascript">
         $(function () {
@@ -34,6 +35,26 @@
                 return percentage / 100 * 360
             }
         });
+    </script>
+    <script>
+    function battery(charge) {
+            var index = 0;
+            $(".battery .bar").each(function () {
+                var power = Math.round(charge / 10);
+                if (index != power) {
+                    $(this).addClass("active");
+                    index++;
+                } else {
+                    $(this).removeClass("active");
+                }
+            });
+        }
+
+        $(".battery .bar").click(function () {
+            battery(parseInt($(this).data("power")));
+        });
+
+        battery(67.15); // (67%) Any number 100 or lower will work, Including decimals.
     </script>
 
 </head>
@@ -452,9 +473,24 @@
                             <div class="card-body">
                                 <h5 class="card-title">Battery 1</h5>
                                 <p class="card-text">
-                                    State: <br>
-                                    Errors: <br>
-                                    Progress bar todo
+                                    <div class="row text-center mt-4">
+                                        <div class="h6 mb-0">State</div><span class="small text-gray">Charging</span>
+                                        <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    </div>
+                                    <div class="row text-center mt-4">
+                                        <div class='battery'>
+                                            <div class='bar' data-power='10'></div>
+                                            <div class='bar' data-power='20'></div>
+                                            <div class='bar' data-power='30'></div>
+                                            <div class='bar' data-power='40'></div>
+                                            <div class='bar' data-power='50'></div>
+                                            <div class='bar' data-power='60'></div>
+                                            <div class='bar' data-power='70'></div>
+                                            <div class='bar' data-power='80'></div>
+                                            <div class='bar' data-power='90'></div>
+                                            <div class='bar' data-power='100'></div>
+                                        </div>
+                                    </div>
                                 </p>
                             </div>
                             <div class="card-footer">Updated: 10s ago</div>
