@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 #from pusher import Pusher
 
 app = Flask(__name__)
-
+app.config['SESSION_COOKIE_SECURE'] = False
 
 @app.route('/')
 def index():

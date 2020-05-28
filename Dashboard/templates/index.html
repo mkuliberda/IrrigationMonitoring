@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
-    <link href="progress-bar.css" rel="stylesheet" type="text/css" />
+    {% block styles %}
+    <link href="{{ url_for('static', filename='progress-bar.css') }}" rel="stylesheet">
+    {% endblock %}
     <script type="text/javascript">
         $(function () {
             $(".progress").each(function () {
@@ -30,29 +32,6 @@
 
             function percentageToDegrees(percentage) {
                 return percentage / 100 * 360
-            }
-        });
-    </script>
-    <script type="text/javascript">
-        $(function () {
-            $(".temperature").each(function () {
-                var value = $(this).attr('data-value');
-                var left = $(this).find('.temperature-left .progress-bar');
-                var right = $(this).find('.temperature-right .progress-bar');
-
-                if (value > -40) {
-                    if (value <= 20) {
-                        right.css('transform', 'rotate(' + temperatureToDegrees(value) + 'deg)')
-                    } else {
-                        right.css('transform', 'rotate(180deg)')
-                        left.css('transform', 'rotate(' + temperatureToDegrees(value - 20) + 'deg)')
-                    }
-                }
-
-            })
-
-            function temperatureToDegrees(temperature) {
-                return temperature / 120 * 360
             }
         });
     </script>
