@@ -80,9 +80,20 @@
                         <div class="card-body">
                             <h5 class="card-title">Sector 0</h5>
                             <p class="card-text">
-                                Plants: <br>
-                                Activity: <br>
-                                Errors:
+                                <div class="row mt-4">
+                                    <div class="col-6 text-left">
+                                        <div class="h6 mb-0">Plants</div><span class="small text-gray">{plants string}</span>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <div class="spinner-border text-primary spinner-border-lg"></div><br>
+                                        Watering...
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    </div>
+                                </div>
                             </p>
                         </div>
                         <div class="card-footer">Updated: 10s ago</div>
@@ -91,9 +102,20 @@
                         <div class="card-body">
                             <h5 class="card-title">Sector 1</h5>
                             <p class="card-text">
-                                Plants: <br>
-                                Activity: <br>
-                                Errors:
+                                <div class="row mt-4">
+                                    <div class="col-6 text-left">
+                                        <div class="h6 mb-0">Plants</div><span class="small text-gray">{plants string}</span>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <div class="spinner-grow text-primary spinner-grow-lg"></div><br>
+                                        Waiting...
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    </div>
+                                </div>
                             </p>
                         </div>
                         <div class="card-footer">Updated: 10s ago</div>
@@ -102,9 +124,20 @@
                         <div class="card-body">
                             <h5 class="card-title">Sector 2</h5>
                             <p class="card-text">
-                                Plants: <br>
-                                Activity: <br>
-                                Errors:
+                                <div class="row mt-4">
+                                    <div class="col-6 text-left">
+                                        <div class="h6 mb-0">Plants</div><span class="small text-gray">{plants string}</span>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <div class="spinner-grow text-primary spinner-grow-lg"></div><br>
+                                        Waiting...
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    </div>
+                                </div>
                             </p>
                         </div>
                         <div class="card-footer">Updated: 10s ago</div>
@@ -113,9 +146,20 @@
                         <div class="card-body">
                             <h5 class="card-title">Sector 3</h5>
                             <p class="card-text">
-                                Plants: <br>
-                                Activity: <br>
-                                Errors:
+                                <div class="row mt-4">
+                                    <div class="col-6 text-left">
+                                        <div class="h6 mb-0">Plants</div><span class="small text-gray">{plants string}</span>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <div class="spinner-grow text-primary spinner-grow-lg"></div><br>
+                                        Waiting...
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    </div>
+                                </div>
                             </p>
                         </div>
                         <div class="card-footer">Updated: 10s ago</div>
@@ -128,9 +172,9 @@
                             <h5 class="card-title">Watertank 0</h5>
                             <p class="card-text">
                                 <div class="row mt-4">
-                                    <div class="col-6">
+                                    <div class="col-12">
                                         <!--Progress bar-->
-                                        <div class="progress mx-auto" data-value='60'>
+                                        <div class="progress mx-auto" data-value='10'>
                                             <span class="progress-left">
                                                 <span class="progress-bar border-primary"></span>
                                             </span>
@@ -138,36 +182,22 @@
                                                 <span class="progress-bar border-primary"></span>
                                             </span>
                                             <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                                <div class="h2 font-weight-bold">60<sup class="small">%</sup></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <!--Progress bar-->
-                                        <div class="progress mx-auto" data-value='15'>
-                                            <span class="progress-left">
-                                                <span class="progress-bar border-primary"></span>
-                                            </span>
-                                            <span class="progress-right">
-                                                <span class="progress-bar border-primary"></span>
-                                            </span>
-                                            <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                                <div class="h2 font-weight-bold">15<sup class="small">C</sup></div>
+                                                <div class="h2 font-weight-bold">10<sup class="small">%</sup></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                    <!-- Demo info -->
-                                    <div class="row text-center mt-4">
-                                        <div class="col-6">
-                                            <div class="h6 mb-0">Water level</div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="h6 mb-0">Temperature</div>
-                                        </div>
+                                <!-- Demo info -->
+                                <div class="row text-center mt-4">
+                                    <div class="col-12">
+                                        <div class="h6 mb-0">Water level</div>
                                     </div>
-                                <br/>
-                                <div class="h6 mb-0">Errors:</div>
+                                </div>
+                                <div class="row mt-4">
+                                        <div class="col-12 text-left">
+                                            <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                        </div>
+                                </div>
                             </p>
                         </div>
                         <div class="card-footer">Updated: 10s ago</div>
