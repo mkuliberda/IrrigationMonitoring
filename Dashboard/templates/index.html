@@ -36,7 +36,7 @@
             }
         });
     </script>
-    <script>
+    <script type="text/javascript">
     function battery(charge) {
             var index = 0;
             $(".battery .bar").each(function () {
@@ -54,7 +54,7 @@
             battery(parseInt($(this).data("power")));
         });
 
-        battery(67.15); // (67%) Any number 100 or lower will work, Including decimals.
+        //battery(67.15); // (67%) Any number 100 or lower will work, Including decimals.
     </script>
 
 </head>
@@ -473,24 +473,22 @@
                             <div class="card-body">
                                 <h5 class="card-title">Battery 1</h5>
                                 <p class="card-text">
-                                    <div class="row text-center mt-4">
-                                        <div class="h6 mb-0">State</div><span class="small text-gray">Charging</span>
-                                        <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
-                                    </div>
-                                    <div class="row text-center mt-4">
+                                        <div class="row mt-4">
+                                        <div class="col-12">   
                                         <div class='battery'>
-                                            <div class='bar' data-power='10'></div>
-                                            <div class='bar' data-power='20'></div>
-                                            <div class='bar' data-power='30'></div>
                                             <div class='bar' data-power='40'></div>
-                                            <div class='bar' data-power='50'></div>
-                                            <div class='bar' data-power='60'></div>
-                                            <div class='bar' data-power='70'></div>
-                                            <div class='bar' data-power='80'></div>
-                                            <div class='bar' data-power='90'></div>
-                                            <div class='bar' data-power='100'></div>
                                         </div>
-                                    </div>
+                                        </div>
+                                        </div>
+                                        <div class="row mt-4">
+                                            <div class="col-6 text-center">
+                                            <div class="h6 mb-0">State</div><span class="small text-gray">Charging</span>
+                                            </div>
+                                            <div class="col-6 text-center">
+                                            <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                            </div>
+                                        </div>
+                                
                                 </p>
                             </div>
                             <div class="card-footer">Updated: 10s ago</div>
