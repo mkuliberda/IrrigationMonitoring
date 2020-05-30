@@ -120,7 +120,7 @@ dict decodeSectorPy(IrrigationMessage & _irm_obj){
 	 * ||||||||->(0) 1 if cmd not consumed
 	 * |||||||-->(1) 1 if active, 0 if stopped
 	 * ||||||--->(2) 1 if runtime timeout
-	 * |||||---->(3)
+	 * |||||---->(3) 1 if fault occurred at least once
 	 * ||||----->(4)
 	 * |||------>(5) 1 if none of avbl pumps was correctly initialized/created
 	 * ||------->(6) 1 if controller is in wrong or not avbl mode
@@ -130,7 +130,8 @@ dict decodeSectorPy(IrrigationMessage & _irm_obj){
     sector_dict["watering_active"] = state.test(1) ? true : false;
     //errors shown dynamically
     sector_dict["errors"] = "";
-    if (state.test(2) == true) sector_dict["errors"] += "timeout,"; 
+    if (state.test(2) == true) sector_dict["errors"] += "timeout,";
+    if (state.test(3) == true) sector_dict["errors"] += "fault occurred,"; 
     if (state.test(5) == true) sector_dict["errors"] += "pump invalid,"; 
     if (state.test(6) == true) sector_dict["errors"] += "mode incorrect,";
     if (state.test(7) == true) sector_dict["errors"] += "0 pump avbl,";  
