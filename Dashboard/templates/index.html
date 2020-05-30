@@ -10,62 +10,178 @@
 </head>
 <body>
 
-    <div class="container-fluid">
-        <h2>Irrigation Monitoring & Control</h2>
-        <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-            <li><a data-toggle="tab" href="#irrigation">Irrigation Status</a></li>
-            <li><a data-toggle="tab" href="#plants">Plants</a></li>
-            <li><a data-toggle="tab" href="#system">System</a></li>
-        </ul>
+<div class="container-fluid">
+    <h2 style="text-align:center;">Irrigation Monitoring & Control</h2>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home"><font size="4">Home</font></a></li>
+        <li><a data-toggle="tab" href="#irrigation"><font size="4">Irrigation</font></a></li>
+        <li><a data-toggle="tab" href="#plants"><font size="4">Plants</font></a></li>
+        <li><a data-toggle="tab" href="#system"><font size="4">System</font></a></li>
+    </ul>
 
-        <div class="tab-content">
-            <div id="home" class="tab-pane fade in active">
-                <h3>HOME</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                <div class="alert alert-success">
-                    <strong>Success!</strong> This alert box could indicate a successful or positive action.
-                </div>
-                <div class="alert alert-info">
-                    <strong>Info!</strong> This alert box could indicate a neutral informative change or action.
-                </div>
-                <div class="alert alert-warning">
-                    <strong>Warning!</strong> This alert box could indicate a warning that might need attention.
-                </div>
-                <div class="alert alert-danger">
-                    <strong>Danger!</strong> This alert box could indicate a dangerous or potentially negative action.
-                </div>
+    <div class="tab-content">
+        <div id="home" class="tab-pane fade in active" ><br>
+            <p style="text-align:center;"><font size="4">System messages are shown in this space</font></p>
+            <div class="alert alert-success">
+                <strong>Success!</strong> This alert box could indicate a successful or positive action.
             </div>
-            <div id="irrigation" class="tab-pane fade">
-                <h3>IRRIGATION</h3>
-                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width:10%">
-                        10% Complete (success)
-                    </div>
-                </div>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width:20%">
-                        20% Complete (success)
-                    </div>
-                </div>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:60%">
-                        60% Complete (warning)
-                    </div>
-                </div>
-
+            <div class="alert alert-info">
+                <strong>Info!</strong> This alert box could indicate a neutral informative change or action.
             </div>
-            <div id="plants" class="tab-pane fade">
-                <h3>PLANTS</h3>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+            <div class="alert alert-warning">
+                <strong>Warning!</strong> This alert box could indicate a warning that might need attention.
             </div>
-            <div id="system" class="tab-pane fade">
-                <h3>SYSTEM</h3>
-                <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+            <div class="alert alert-danger">
+                <strong>Danger!</strong> This alert box could indicate a dangerous or potentially negative action.
             </div>
         </div>
-    </div>
+        <div id="irrigation" class="tab-pane fade">
+            <br />
+            <div class="panel-group">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Sector 0</div>
+                    <div class="panel-body">
+                        Plants:<br>
+                        Watering: Active<br>
+                        Errors: <br>
+                        Last update:
+                    </div>
+                </div>
+                <div class="panel panel-info">
+                    <div class="panel-heading">Sector 1</div>
+                    <div class="panel-body">
+                        Plants:<br>
+                        Watering: Active<br>
+                        Errors: <br>
+                        Last update:
+                    </div>
+                </div>
+                <div class="panel panel-info">
+                    <div class="panel-heading">Sector 2</div>
+                    <div class="panel-body">
+                        Plants:<br>
+                        Watering: Active<br>
+                        Errors: <br>
+                        Last update:
+                    </div>
+                </div>
+                <div class="panel panel-info">
+                    <div class="panel-heading">Sector 3</div>
+                    <div class="panel-body">
+                        Plants:<br>
+                        Watering: Active<br>
+                        Errors: <br>
+                        Last update:
+                    </div>
+                </div>
+            </div>
+            <div class="panel-group">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Watertank</div>
+                    <div class="panel-body">
+                        Water level:<br>
+                        Water temperature:<br>
+                        Last update:
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div id="plants" class="tab-pane fade">
+                <br>
+                <div class="container">
+                    <div class="panel-group">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">Channel 1</div>
+                            <div class="panel-body">
+                                Name:<br>
+                                Soil moisture:<br>
+                                Last update:
+                            </div>
+                        </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">Channel 2</div>
+                            <div class="panel-body">
+                                Name:<br>
+                                Soil moisture:<br>
+                                Last update:
+                            </div>
+                        </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">Channel 3</div>
+                            <div class="panel-body">
+                                Name:<br>
+                                Soil moisture:<br>
+                                Last update:
+                            </div>
+                        </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">Channel 4</div>
+                            <div class="panel-body">
+                                Name:<br>
+                                Soil moisture:<br>
+                                Last update:
+                            </div>
+                        </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">Channel 5</div>
+                            <div class="panel-body">
+                                Name:<br>
+                                Soil moisture:<br>
+                                Last update:
+                            </div>
+                        </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">Channel 6</div>
+                            <div class="panel-body">
+                                Name:<br>
+                                Soil moisture:<br>
+                                Last update:
+                            </div>
+                        </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">Channel 7</div>
+                            <div class="panel-body">
+                                Name:<br>
+                                Soil moisture:<br>
+                                Last update:
+                            </div>
+                        </div>
+                        <div class="panel panel-info">
+                            <div class="panel-heading">Channel 8</div>
+                            <div class="panel-body">
+                                Name:<br>
+                                Last update:<br>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width:30%">
+                                        Soil moisture 30%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div id="system" class="tab-pane fade"><br>
+                <p style="text-align:center;"><font size="4">You can check system status here</font></p>
+                <div class="panel-group">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">Battery</div>
+                        <div class="panel-body">
+                            State:<br>
+                            Errors:<br>
+                            Last update:
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width:10%">
+                                Charged 10%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 </body>
 </html>
