@@ -1,31 +1,52 @@
-.battery {
-  padding: 10px 10px;
-  width: 340px;
-  border: solid thin #FFF;
+.font-20px{font-size: 20px!important;}
+.font-50px{font-size: 50px!important;}
+.font-70px{font-size: 70px!important;}
+.font-90px{font-size: 90px!important;}
+
+.fa-battery-filling{
   position: relative;
 }
-
-.battery:after {
-  content: " ";
-  top: 30px;
-  right: -7px;
-  height: 20px;
-  width: 7px;
+.fa-battery-filling span{
   position: absolute;
-  background: #FFF;
+  background: orange;
+  top: 28%;
+  height: 44%;
+  left: 11%;
+  border-radius: 2px;
+  transition: 250ms ease;
 }
-
-.bar {
-  cursor: pointer;
-  display: inline-block;
-  width: 0;
-  border: solid thin rgba(255, 255, 255, .1);
-  padding: 14px;
-  height: 30px;
-  background: transparent;
-  transition: background 1s;
+.fa-battery-filling [style="width:calc(1% * 0.73)"],
+.fa-battery-filling [style="width:calc(2% * 0.73)"], 
+.fa-battery-filling [style="width:calc(3% * 0.73)"], 
+.fa-battery-filling [style="width:calc(4% * 0.73)"], 
+.fa-battery-filling [style="width:calc(5% * 0.73)"], 
+.fa-battery-filling [style="width:calc(6% * 0.73)"], 
+.fa-battery-filling [style="width:calc(7% * 0.73)"], 
+.fa-battery-filling [style="width:calc(8% * 0.73)"], 
+.fa-battery-filling [style="width:calc(9% * 0.73)"], 
+.fa-battery-filling [style="width:calc(10% * 0.73)"],
+.fa-battery-filling [style="width:calc(11% * 0.73)"],
+.fa-battery-filling [style="width:calc(12% * 0.73)"],
+.fa-battery-filling [style="width:calc(13% * 0.73)"],
+.fa-battery-filling [style="width:calc(14% * 0.73)"],
+.fa-battery-filling [style="width:calc(15% * 0.73)"],
+.fa-battery-filling [style="width:calc(16% * 0.73)"],
+.fa-battery-filling [style="width:calc(17% * 0.73)"],
+.fa-battery-filling [style="width:calc(18% * 0.73)"],
+.fa-battery-filling [style="width:calc(19% * 0.73)"],
+.fa-battery-filling [style="width:calc(20% * 0.73)"]{
+  background: red;
 }
-
-.bar.active {
-  background: limegreen;
+.fa-battery-filling [style="width:calc(90% * 0.73)"],
+.fa-battery-filling [style="width:calc(91% * 0.73)"],
+.fa-battery-filling [style="width:calc(92% * 0.73)"],
+.fa-battery-filling [style="width:calc(93% * 0.73)"],
+.fa-battery-filling [style="width:calc(94% * 0.73)"],
+.fa-battery-filling [style="width:calc(95% * 0.73)"],
+.fa-battery-filling [style="width:calc(96% * 0.73)"],
+.fa-battery-filling [style="width:calc(97% * 0.73)"],
+.fa-battery-filling [style="width:calc(98% * 0.73)"],
+.fa-battery-filling [style="width:calc(99% * 0.73)"],
+.fa-battery-filling [style="width:calc(100% * 0.73)"]{
+  background: green;
 }

@@ -37,25 +37,13 @@
         });
     </script>
     <script type="text/javascript">
-    function battery(charge) {
-            var index = 0;
-            $(".battery .bar").each(function () {
-                var power = Math.round(charge / 10);
-                if (index != power) {
-                    $(this).addClass("active");
-                    index++;
-                } else {
-                    $(this).removeClass("active");
-                }
-            });
-        }
-
-        $(".battery .bar").click(function () {
-            battery(parseInt($(this).data("power")));
-        });
-
-        //battery(67.15); // (67%) Any number 100 or lower will work, Including decimals.
-    </script>
+    setInterval(function(){
+        var pwr = document.getElementById('Battery1').innerText;
+        //var pwr = $(this).attr('power-level');
+        document.getElementById("result").setAttribute("style", "width:calc("+pwr+"% * 0.73)");
+        },1000);
+</script>
+   
 
 </head>
 <body>
@@ -463,7 +451,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
             <div id="system" class="tab-pane fade">
                 <br>
@@ -474,18 +461,26 @@
                                 <h5 class="card-title">Battery 1</h5>
                                 <p class="card-text">
                                         <div class="row mt-4">
-                                        <div class="col-12">   
-                                        <div class='battery'>
-                                            <div class='bar' data-power='40'></div>
-                                        </div>
+                                        <div class="col-12 text-center"> 
+                                            <i class="fa fa-battery-empty font-90px fa-battery-filling" aria-hidden="true">
+                                                <span id="result" style="width:calc(10% * 0.73)"></span></i>
                                         </div>
                                         </div>
                                         <div class="row mt-4">
                                             <div class="col-6 text-center">
-                                            <div class="h6 mb-0">State</div><span class="small text-gray">Charging</span>
+                                            <div class="h6 mb-0">State</div><span class="small text-gray">{Charging}</span>
                                             </div>
                                             <div class="col-6 text-center">
-                                            <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                                <div class="h6 mb-0">Power level</div><span class="small text-gray">
+                                                    <p id="Battery1">
+                                                        90
+                                                     </p>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-4">
+                                            <div class="col-12 text-center">
+                                                <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
                                             </div>
                                         </div>
                                 
