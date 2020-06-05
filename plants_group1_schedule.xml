@@ -1,45 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Sector0 objects="Pelargonie i bluszcz">
-    <period id="gardening" begin="2020-02-24 00:00:00" end="2020-05-30 23:59:59">        <!--yyyy-mm-dd hh:mm:ss.s-->
-        <weekday day="Thursday">
-            <time>22:33:00</time>
-            <duration>00:00:30</duration>            <!--hh:mm:ss-->
+<Sector0 objects="Warzywa">
+    <period id="gardening" begin="2020-05-01 00:00:00" end="2020-09-30 23:59:59">        <!--yyyy-mm-dd hh:mm:ss.s-->
+        <weekday day="Monday">
+            <time>07:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
-        <weekday day="Wednesday">
-            <time>21:10:00</time>
-            <duration>00:30:00</duration>            <!--hh:mm:ss-->
+        <weekday day="Monday">
+            <time>08:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Monday">
+            <time>19:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Monday">
+            <time>20:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Tuesday">
-            <time>20:39:00</time>
-            <duration>00:01:00</duration>            <!--hh:mm:ss-->
+            <time>07:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
-        <weekday day="Monday">
-            <time>19:38:00</time>
-            <duration>00:00:10</duration>            <!--hh:mm:ss-->
+        <weekday day="Tuesday">
+            <time>08:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
-        <weekday day="Saturday">
-            <time>22:52:00</time>
-            <duration>00:00:20</duration>            <!--hh:mm:ss-->
+        <weekday day="Tuesday">
+            <time>19:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
-        <weekday day="Sunday">
-            <time>17:11:00</time>
-            <duration>00:00:20</duration>            <!--hh:mm:ss-->
+        <weekday day="Tuesday">
+            <time>20:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
-        <weekday day="Sunday">
-            <time>17:09:00</time>
-            <duration>00:00:20</duration>            <!--hh:mm:ss-->
+        <weekday day="Wednesday">
+            <time>07:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
-    </period>
-    <period id="hot season" begin="2020-06-15 00:00:00" end="2020-08-30 23:59:59">        <!--yyyy-mm-dd hh:mm:ss.s-->
-        <weekday day="Monday">
-            <time>08:30:00</time>
-            <duration>00:01:00</duration>            <!--hh:mm:ss-->
+        <weekday day="Wednesday">
+            <time>08:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Wednesday">
+            <time>19:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Wednesday">
+            <time>20:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Thursday">
-            <time>17:00:00</time>
-            <duration>02:00:00</duration>            <!--hh:mm:ss-->
+            <time>07:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Thursday">
+            <time>08:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Thursday">
+            <time>19:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Thursday">
+            <time>20:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Friday">
+            <time>07:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Friday">
+            <time>08:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Friday">
+            <time>19:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Friday">
+            <time>20:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Saturday">
+            <time>07:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Saturday">
+            <time>08:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Saturday">
+            <time>19:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Saturday">
+            <time>20:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Sunday">
+            <time>07:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Sunday">
+            <time>08:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Sunday">
+            <time>19:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Sunday">
+            <time>20:00:00</time>
+            <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
     </period>
-    <exception id="break1" begin="2020-08-15 00:00:00" end="2020-08-15 23:59:59"></exception>        <!--yyyy-mm-dd hh:mm:ss.s-->
-    <exception id="test" begin="2020-02-27 17:00:00" end="2020-02-27 17:40:00"></exception>        <!--yyyy-mm-dd hh:mm:ss.s-->
+    <exception id="break1" begin="2020-01-15 00:00:00" end="2020-01-15 01:00:00"></exception>        <!--yyyy-mm-dd hh:mm:ss.s-->
+    <exception id="break2" begin="2020-02-27 17:00:00" end="2020-02-27 17:40:00"></exception>        <!--yyyy-mm-dd hh:mm:ss.s-->
 </Sector0>

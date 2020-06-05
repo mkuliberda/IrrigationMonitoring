@@ -13,12 +13,12 @@ RADIO1_IRQ_PIN = 13  # BCM pins numbering
 RADIO1_SPIDEV = 0
 RADIO1_SPICS = 0
 RADIO1_PAYLOAD_SIZE = 32
-RADIO1_CHANNEL = 15
+RADIO1_CHANNEL = 1
 RADIO1_MY_ADDRESS = [231, 231, 231, 231, 231]  # 0xe7 is 231
 RADIO1_TX_ADDRESS = [126, 126, 126, 126, 126]  # 0x7e is 126
 COMMS_REFRESH_RATE_MS = 50
 
-PLANTS_SCHEDULES = ["plants_group1_schedule.xml", "plants_group2_schedule.xml", "plants_group3_schedule.xml"]
+PLANTS_SCHEDULES = ["plants_group1_schedule.xml"]
 SCHEDULE_REFRESH_RATE_MS = 1000
 
 MONITOR_REFRESH_RATE_MS = 1000
@@ -236,7 +236,7 @@ if __name__ == "__main__":
         wireless_link = communicationsThread(RADIO1_SPIDEV, RADIO1_SPICS, RADIO1_CE_PIN, RADIO1_IRQ_PIN,
                                                 RADIO1_PAYLOAD_SIZE, RADIO1_CHANNEL,
                                                 wireless.NRF24L01_OutputPower.P0dBm,
-                                                wireless.NRF24L01_DataRate.R1Mbps,
+                                                wireless.NRF24L01_DataRate.R250kbps,
                                                 RADIO1_MY_ADDRESS, RADIO1_TX_ADDRESS,
                                                 COMMS_REFRESH_RATE_MS)
         wireless_link.configure_new_message_event(message_received_event)
