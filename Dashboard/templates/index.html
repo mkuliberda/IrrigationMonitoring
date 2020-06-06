@@ -495,15 +495,63 @@
             </div>
             <div id="weather" class="tab-pane fade">
                 <br>
-                <div class="card-deck">
-                    <div class="card bg-light">
-                        <div class="card-body">
-                            <h5 class="card-title">Weather in Gdansk</h5>
+                    <div class="card-deck">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">Current weather in {{current_weather.city}}</h5>
+                                <p class="card-text">
+                                        <div class="row mt-4">
+                                        <div class="col-12 text-center"> 
+                                            <figure class="img is-100x100">
+                                                <img src="http://openweathermap.org/img/w/{{current_weather.icon}}.png" alt="Image">
+                                            </figure>
+                                            <p>{{current_weather.description}}</p>
+                                        </div>
+                                        </div>
+                                        <div class="row mt-4">
+                                            <div class="col-4 text-center">
+                                                <div class="h6 mb-0">Temp</div><span class="small text-gray">{{current_weather.temperature}} °C</span>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <div class="h6 mb-0">Real feel</div><span class="small text-gray">{{current_weather.real_feel}}°C</span>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <div class="h6 mb-0">Humidity</div><span class="small text-gray">{{current_weather.humidity}}%</span>
+                                            </div>
+                                        </div>
+                                </p>
+                            </div>
+                            <div class="card-footer">Updated: 10s ago</div>
                         </div>
-                        <div class="card-footer">Updated: 10s ago</div>
-                    </div> 
-                </div>
-            </div>          
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">3Hrs forecast for {{current_weather.city}}</h5>
+                                <p class="card-text">
+                                        <div class="row mt-4">
+                                        <div class="col-12 text-center"> 
+                                            <figure class="img is-100x100">
+                                                <img src="http://openweathermap.org/img/w/{{current_weather.icon}}.png" alt="Image">
+                                            </figure>
+                                            <p>{{current_weather.description}}</p>
+                                        </div>
+                                        </div>
+                                        <div class="row mt-4">
+                                            <div class="col-4 text-center">
+                                                <div class="h6 mb-0">Temp</div><span class="small text-gray">{{current_weather.temperature}} °C</span>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <div class="h6 mb-0">Real feel</div><span class="small text-gray">{{current_weather.real_feel}}°C</span>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <div class="h6 mb-0">Humidity</div><span class="small text-gray">{{current_weather.humidity}}%</span>
+                                            </div>
+                                        </div>
+                                </p>
+                            </div>
+                            <div class="card-footer">Updated: 10s ago</div>
+                        </div>
+                    </div>
+            </div>
         </div>
 
 </body>
