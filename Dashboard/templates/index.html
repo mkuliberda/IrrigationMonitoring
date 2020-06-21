@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
     {% block styles %}
     <link href="{{ url_for('static', filename='progress-bar.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='battery.css') }}" rel="stylesheet">
@@ -37,13 +38,13 @@
         });
     </script>
     <script type="text/javascript">
-    setInterval(function(){
-        var pwr = document.getElementById('Battery1').innerText;
-        //var pwr = $(this).attr('power-level');
-        document.getElementById("result").setAttribute("style", "width:calc("+pwr+"% * 0.73)");
-        },1000);
-</script>
-   
+        setInterval(function () {
+            var pwr = document.getElementById('Battery1').innerText;
+            //var pwr = $(this).attr('power-level');
+            document.getElementById("result").setAttribute("style", "width:calc(" + pwr + "% * 0.73)");
+        }, 1000);
+    </script>
+
 
 </head>
 <body>
@@ -102,8 +103,11 @@
                                     </div>
                                 </div>
                                 <div class="row mt-4">
-                                    <div class="col-12 text-left">
+                                    <div class="col-6 text-left">
                                         <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <button type="button" id="sector0_water_toggle" class="btn btn-primary btn-sm">Toggle watering</button>
                                     </div>
                                 </div>
                             </p>
@@ -124,8 +128,11 @@
                                     </div>
                                 </div>
                                 <div class="row mt-4">
-                                    <div class="col-12 text-left">
+                                    <div class="col-6 text-left">
                                         <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <button type="button" id="sector0_water_toggle" class="btn btn-primary btn-sm">Toggle watering</button>
                                     </div>
                                 </div>
                             </p>
@@ -146,8 +153,11 @@
                                     </div>
                                 </div>
                                 <div class="row mt-4">
-                                    <div class="col-12 text-left">
+                                    <div class="col-6 text-left">
                                         <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <button type="button" id="sector0_water_toggle" class="btn btn-primary btn-sm">Toggle watering</button>
                                     </div>
                                 </div>
                             </p>
@@ -168,8 +178,11 @@
                                     </div>
                                 </div>
                                 <div class="row mt-4">
-                                    <div class="col-12 text-left">
+                                    <div class="col-6 text-left">
                                         <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <button type="button" id="sector0_water_toggle" class="btn btn-primary btn-sm">Toggle watering</button>
                                     </div>
                                 </div>
                             </p>
