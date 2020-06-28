@@ -44,6 +44,69 @@
             document.getElementById("result").setAttribute("style", "width:calc(" + pwr + "% * 0.73)");
         }, 1000);
     </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+             //web socket handling
+            if ('WebSocket' in window) {
+                connect('ws://localhost:1234/');
+            }
+            else {
+                console.log("WebSockets don't seem to be supported on this browser.");
+            }
+
+            function connect(host) {
+                ws = new WebSocket(host);
+                ws.onopen = function () {
+                    console.log('Connected!');
+                };
+
+                ws.onmessage = function (evt) {
+                    console.log(evt.data);
+                    var obj = JSON.parse(evt.data);
+                    //if (obj.sectors[0].watering == true) {var }
+                    //var msg_arr = evt.data.split(",");
+                    //console.log(msg_arr);
+                    //$('#btn-one').click(function () { btn-one is id in html class
+                    //    $('#btn-one').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Loading...').addClass('disabled');
+                    //});
+                    if (obj.sectors[0].last_update != null) {
+                        
+                        document.getElementById("sector0_plants").innerHTML = obj.sectors[0].plants;
+                        document.getElementById("sector0_last_update").innerHTML = "Updated: " + obj.sectors[0].last_update + " ago";
+                        document.getElementById("sector0_errors").innerHTML = obj.sectors[0].errors;
+                        if (obj.sectors[0].watering == true) {
+                            $('#sector0_water_btn').html('<span class="spinner-grow spinner-grow-sm mr-2" role="status"></span>Watering...');
+                        }
+                        else {
+                            $('#sector0_water_btn').html('Standby');
+                        };
+                    };
+                    $('#sector0_water_btn').click(function () {
+                        console.log('Sector0 click');
+                    });
+
+                    
+                    //tags.innerHTML = obj.sectors[0].plants;
+                    //console.log(tags);
+                    // handle data in evt.data
+                };
+
+                ws.onclose = function () {
+                    console.log('Socket connection was closed!!!');
+                };
+
+                setInterval(function () { ws.send("Hello server"); console.log("hello"); }, 2000);
+            };
+        });
+        /*var cnt = 1;
+
+        function refreshData(ws) {
+            ws.send("Hello server");
+            console.log(cnt += 1);
+        };
+        setInterval(refreshData, 2000);*/
+    </script>
 
 
 </head>
@@ -94,100 +157,92 @@
                             <h5 class="card-title">Sector 0</h5>
                             <p class="card-text">
                                 <div class="row mt-4">
-                                    <div class="col-6 text-left">
-                                        <div class="h6 mb-0">Plants</div><span class="small text-gray">{plants string}</span>
-                                    </div>
-                                    <div class="col-6 text-center">
-                                        <div class="spinner-border text-primary spinner-border-lg"></div><br>
-                                        Watering...
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Plants</div><span class="small text-gray" id="sector0_plants">plants</span>
                                     </div>
                                 </div>
                                 <div class="row mt-4">
-                                    <div class="col-6 text-left">
-                                        <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Errors</div><span class="small text-gray" id="sector0_errors">errors</span>
                                     </div>
-                                    <div class="col-6 text-center">
-                                        <button type="button" id="sector0_water_toggle" class="btn btn-primary btn-sm">Toggle watering</button>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12 text-center">
+                                        <button type="button" id="sector0_water_btn" class="btn btn-primary btn-bg">Standby</button>
                                     </div>
                                 </div>
                             </p>
                         </div>
-                        <div class="card-footer">Updated: 10s ago</div>
+                        <div class="card-footer" id="sector0_last_update">Updated: never</div>
                     </div>
                     <div class="card bg-light">
                         <div class="card-body">
                             <h5 class="card-title">Sector 1</h5>
                             <p class="card-text">
                                 <div class="row mt-4">
-                                    <div class="col-6 text-left">
-                                        <div class="h6 mb-0">Plants</div><span class="small text-gray">{plants string}</span>
-                                    </div>
-                                    <div class="col-6 text-center">
-                                        <div class="spinner-grow text-primary spinner-grow-lg"></div><br>
-                                        Waiting...
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Plants</div><span class="small text-gray" id="sector1_plants">plants</span>
                                     </div>
                                 </div>
                                 <div class="row mt-4">
-                                    <div class="col-6 text-left">
-                                        <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Errors</div><span class="small text-gray" id="sector1_errors">errors</span>
                                     </div>
-                                    <div class="col-6 text-center">
-                                        <button type="button" id="sector0_water_toggle" class="btn btn-primary btn-sm">Toggle watering</button>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12 text-center">
+                                        <button type="button" id="sector1_water_btn" class="btn btn-primary btn-bg">Standby</button>
                                     </div>
                                 </div>
                             </p>
                         </div>
-                        <div class="card-footer">Updated: 10s ago</div>
+                        <div class="card-footer" id="sector1_last_update">Updated: never</div>
                     </div>
                     <div class="card bg-light">
                         <div class="card-body">
                             <h5 class="card-title">Sector 2</h5>
                             <p class="card-text">
                                 <div class="row mt-4">
-                                    <div class="col-6 text-left">
-                                        <div class="h6 mb-0">Plants</div><span class="small text-gray">{plants string}</span>
-                                    </div>
-                                    <div class="col-6 text-center">
-                                        <div class="spinner-grow text-primary spinner-grow-lg"></div><br>
-                                        Waiting...
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Plants</div><span class="small text-gray" id="sector2_plants">plants</span>
                                     </div>
                                 </div>
                                 <div class="row mt-4">
-                                    <div class="col-6 text-left">
-                                        <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Errors</div><span class="small text-gray" id="sector2_errors">errors</span>
                                     </div>
-                                    <div class="col-6 text-center">
-                                        <button type="button" id="sector0_water_toggle" class="btn btn-primary btn-sm">Toggle watering</button>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12 text-center">
+                                        <button type="button" id="sector2_water_btn" class="btn btn-primary btn-bg">Standby</button>
                                     </div>
                                 </div>
                             </p>
                         </div>
-                        <div class="card-footer">Updated: 10s ago</div>
+                        <div class="card-footer" id="sector2_last_update">Updated: never</div>
                     </div>
                     <div class="card bg-light">
                         <div class="card-body">
                             <h5 class="card-title">Sector 3</h5>
                             <p class="card-text">
                                 <div class="row mt-4">
-                                    <div class="col-6 text-left">
-                                        <div class="h6 mb-0">Plants</div><span class="small text-gray">{plants string}</span>
-                                    </div>
-                                    <div class="col-6 text-center">
-                                        <div class="spinner-grow text-primary spinner-grow-lg"></div><br>
-                                        Waiting...
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Plants</div><span class="small text-gray" id="sector3_plants">plants</span>
                                     </div>
                                 </div>
                                 <div class="row mt-4">
-                                    <div class="col-6 text-left">
-                                        <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                    <div class="col-12 text-left">
+                                        <div class="h6 mb-0">Errors</div><span class="small text-gray" id="sector3_errors">errors</span>
                                     </div>
-                                    <div class="col-6 text-center">
-                                        <button type="button" id="sector0_water_toggle" class="btn btn-primary btn-sm">Toggle watering</button>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12 text-center">
+                                        <button type="button" id="sector3_water_btn" class="btn btn-primary btn-bg">Standby</button>
                                     </div>
                                 </div>
                             </p>
                         </div>
-                        <div class="card-footer">Updated: 10s ago</div>
+                        <div class="card-footer" id="sector3_last_update">Updated: never</div>
                     </div>
                 </div>
                 <br />

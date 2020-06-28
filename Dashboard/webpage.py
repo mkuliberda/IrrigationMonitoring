@@ -1,9 +1,14 @@
+
 from flask import Flask, render_template
+from flask_socketio import SocketIO
 import requests
-#from pusher import Pusher
+import socket
+import time
 
 app = Flask(__name__)
 app.config['SESSION_COOKIE_SECURE'] = False
+app.config['SECRET_KEY'] = 'secret'
+socketio = SocketIO(app)
 
 @app.route('/')
 def index():
@@ -45,4 +50,28 @@ def index():
     return render_template('index.html', current_weather=current_weather, forecast_3hr=forecast_3hr)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8082, debug=True)
+    socketio.run(app, host='0.0.0.0', port=8082, debug=True)
+
+    #while True:
+    #    full_msg = ''
+    #    new_msg = True
+    #    while True:
+    #        msg = s.recv(16)
+    #        if new_msg:
+    #            print("new msg len:",msg[:4])
+    #            msglen = len(msg[:4])
+    #            new_msg = False
+
+    #        print(f"full message length: {msglen}")
+
+    #        full_msg += msg.decode("utf-8")
+
+    #        print(len(full_msg))
+
+    #        if len(full_msg)-4 == msglen:
+    #            print("full msg recvd")
+    #            print(full_msg[4:])
+    #            new_msg = True
+    #            full_msg = ""
+    #    time.sleep(5)
+
