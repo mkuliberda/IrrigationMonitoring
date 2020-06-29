@@ -15,36 +15,6 @@
     <link href="{{ url_for('static', filename='battery.css') }}" rel="stylesheet">
     {% endblock %}
     <script type="text/javascript">
-        $(function () {
-            $(".progress").each(function () {
-                var value = $(this).attr('data-value');
-                var left = $(this).find('.progress-left .progress-bar');
-                var right = $(this).find('.progress-right .progress-bar');
-
-                if (value > 0) {
-                    if (value <= 50) {
-                        right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
-                    } else {
-                        right.css('transform', 'rotate(180deg)')
-                        left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
-                    }
-                }
-
-            })
-
-            function percentageToDegrees(percentage) {
-                return percentage / 100 * 360
-            }
-        });
-    </script>
-    <script type="text/javascript">
-        setInterval(function () {
-            var pwr = document.getElementById('Battery1').innerText;
-            //var pwr = $(this).attr('power-level');
-            document.getElementById("result").setAttribute("style", "width:calc(" + pwr + "% * 0.73)");
-        }, 1000);
-    </script>
-    <script type="text/javascript">
         $(document).ready(function () {
 
              //web socket handling
@@ -62,14 +32,8 @@
                 };
 
                 ws.onmessage = function (evt) {
-                    console.log(evt.data);
                     var obj = JSON.parse(evt.data);
-                    //if (obj.sectors[0].watering == true) {var }
-                    //var msg_arr = evt.data.split(",");
-                    //console.log(msg_arr);
-                    //$('#btn-one').click(function () { btn-one is id in html class
-                    //    $('#btn-one').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Loading...').addClass('disabled');
-                    //});
+         
                     if (obj.sectors[0].last_update != null) {
                         
                         document.getElementById("sector0_plants").innerHTML = obj.sectors[0].plants;
@@ -86,10 +50,157 @@
                         console.log('Sector0 click');
                     });
 
-                    
-                    //tags.innerHTML = obj.sectors[0].plants;
-                    //console.log(tags);
-                    // handle data in evt.data
+                    if (obj.sectors[1].last_update != null) {
+
+                        document.getElementById("sector1_plants").innerHTML = obj.sectors[1].plants;
+                        document.getElementById("sector1_last_update").innerHTML = "Updated: " + obj.sectors[1].last_update + " ago";
+                        document.getElementById("sector1_errors").innerHTML = obj.sectors[1].errors;
+                        if (obj.sectors[1].watering == true) {
+                            $('#sector1_water_btn').html('<span class="spinner-grow spinner-grow-sm mr-2" role="status"></span>Watering...');
+                        }
+                        else {
+                            $('#sector1_water_btn').html('Standby');
+                        };
+                    };
+                    $('#sector1_water_btn').click(function () {
+                        console.log('Sector1 click');
+                    });
+
+                    if (obj.sectors[2].last_update != null) {
+
+                        document.getElementById("sector2_plants").innerHTML = obj.sectors[2].plants;
+                        document.getElementById("sector2_last_update").innerHTML = "Updated: " + obj.sectors[2].last_update + " ago";
+                        document.getElementById("sector2_errors").innerHTML = obj.sectors[2].errors;
+                        if (obj.sectors[2].watering == true) {
+                            $('#sector2_water_btn').html('<span class="spinner-grow spinner-grow-sm mr-2" role="status"></span>Watering...');
+                        }
+                        else {
+                            $('#sector2_water_btn').html('Standby');
+                        };
+                    };
+                    $('#sector2_water_btn').click(function () {
+                        console.log('Sector2 click');
+                    });
+
+                    if (obj.sectors[3].last_update != null) {
+
+                        document.getElementById("sector3_plants").innerHTML = obj.sectors[3].plants;
+                        document.getElementById("sector3_last_update").innerHTML = "Updated: " + obj.sectors[3].last_update + " ago";
+                        document.getElementById("sector3_errors").innerHTML = obj.sectors[3].errors;
+                        if (obj.sectors[3].watering == true) {
+                            $('#sector3_water_btn').html('<span class="spinner-grow spinner-grow-sm mr-2" role="status"></span>Watering...');
+                        }
+                        else {
+                            $('#sector3_water_btn').html('Standby');
+                        };
+                    };
+                    $('#sector3_water_btn').click(function () {
+                        console.log('Sector3 click');
+                    });
+
+                    if (obj.watertanks[0].last_update != null) {
+                        document.getElementById("watertank0_level_text").innerHTML = obj.watertanks[0].level + '<sup class="small">%</sup>';
+                        document.getElementById("watertank0_level_data_value").setAttribute("data-value", obj.watertanks[0].level);
+                        document.getElementById("watertank0_last_update").innerHTML = "Updated: " + obj.watertanks[0].last_update + " ago";
+                        document.getElementById("watertank0_errors").innerHTML = obj.watertanks[0].errors;
+                    };
+
+                    if (obj.plants[0].last_update != null) {
+                        document.getElementById("plant0_moisture_text").innerHTML = obj.plants[0].soil_moisture + '<sup class="small">%</sup>';
+                        document.getElementById("plant0_moisture").innerHTML = obj.plants[0].soil_moisture + '%';
+                        document.getElementById("plant0_moisture_data_value").setAttribute("data-value", obj.plants[0].soil_moisture);
+                        document.getElementById("plant0_last_update").innerHTML = "Updated: " + obj.plants[0].last_update + " ago";
+                        document.getElementById("plant0_name").innerHTML = obj.plants[0].name;
+                    };
+
+                    if (obj.plants[1].last_update != null) {
+                        document.getElementById("plant1_moisture_text").innerHTML = obj.plants[1].soil_moisture + '<sup class="small">%</sup>';
+                        document.getElementById("plant1_moisture").innerHTML = obj.plants[1].soil_moisture + '%';
+                        document.getElementById("plant1_moisture_data_value").setAttribute("data-value", obj.plants[1].soil_moisture);
+                        document.getElementById("plant1_last_update").innerHTML = "Updated: " + obj.plants[1].last_update + " ago";
+                        document.getElementById("plant1_name").innerHTML = obj.plants[1].name;
+                    };
+
+                    if (obj.plants[2].last_update != null) {
+                        document.getElementById("plant2_moisture_text").innerHTML = obj.plants[2].soil_moisture + '<sup class="small">%</sup>';
+                        document.getElementById("plant2_moisture").innerHTML = obj.plants[2].soil_moisture + '%';
+                        document.getElementById("plant2_moisture_data_value").setAttribute("data-value", obj.plants[2].soil_moisture);
+                        document.getElementById("plant2_last_update").innerHTML = "Updated: " + obj.plants[2].last_update + " ago";
+                        document.getElementById("plant2_name").innerHTML = obj.plants[2].name;
+                    };
+
+                    if (obj.plants[3].last_update != null) {
+                        document.getElementById("plant3_moisture_text").innerHTML = obj.plants[3].soil_moisture + '<sup class="small">%</sup>';
+                        document.getElementById("plant3_moisture").innerHTML = obj.plants[3].soil_moisture + '%';
+                        document.getElementById("plant3_moisture_data_value").setAttribute("data-value", obj.plants[3].soil_moisture);
+                        document.getElementById("plant3_last_update").innerHTML = "Updated: " + obj.plants[3].last_update + " ago";
+                        document.getElementById("plant3_name").innerHTML = obj.plants[3].name;
+                    };
+
+                    if (obj.plants[4].last_update != null) {
+                        document.getElementById("plant4_moisture_text").innerHTML = obj.plants[4].soil_moisture + '<sup class="small">%</sup>';
+                        document.getElementById("plant4_moisture").innerHTML = obj.plants[4].soil_moisture + '%';
+                        document.getElementById("plant4_moisture_data_value").setAttribute("data-value", obj.plants[4].soil_moisture);
+                        document.getElementById("plant4_last_update").innerHTML = "Updated: " + obj.plants[4].last_update + " ago";
+                        document.getElementById("plant4_name").innerHTML = obj.plants[4].name;
+                    };
+
+                    if (obj.plants[5].last_update != null) {
+                        document.getElementById("plant5_moisture_text").innerHTML = obj.plants[5].soil_moisture + '<sup class="small">%</sup>';
+                        document.getElementById("plant5_moisture").innerHTML = obj.plants[5].soil_moisture + '%';
+                        document.getElementById("plant5_moisture_data_value").setAttribute("data-value", obj.plants[5].soil_moisture);
+                        document.getElementById("plant5_last_update").innerHTML = "Updated: " + obj.plants[5].last_update + " ago";
+                        document.getElementById("plant5_name").innerHTML = obj.plants[5].name;
+                    };
+
+                    if (obj.plants[6].last_update != null) {
+                        document.getElementById("plant6_moisture_text").innerHTML = obj.plants[6].soil_moisture + '<sup class="small">%</sup>';
+                        document.getElementById("plant6_moisture").innerHTML = obj.plants[6].soil_moisture + '%';
+                        document.getElementById("plant6_moisture_data_value").setAttribute("data-value", obj.plants[6].soil_moisture);
+                        document.getElementById("plant6_last_update").innerHTML = "Updated: " + obj.plants[6].last_update + " ago";
+                        document.getElementById("plant6_name").innerHTML = obj.plants[6].name;
+                    };
+
+                    if (obj.plants[7].last_update != null) {
+                        document.getElementById("plant7_moisture_text").innerHTML = obj.plants[7].soil_moisture + '<sup class="small">%</sup>';
+                        document.getElementById("plant7_moisture").innerHTML = obj.plants[7].soil_moisture + '%';
+                        document.getElementById("plant7_moisture_data_value").setAttribute("data-value", obj.plants[7].soil_moisture);
+                        document.getElementById("plant7_last_update").innerHTML = "Updated: " + obj.plants[7].last_update + " ago";
+                        document.getElementById("plant7_name").innerHTML = obj.plants[7].name;
+                    };
+
+                    if (obj.power[0].last_update != null) {
+                        var pwr = obj.power[0].level;
+                        document.getElementById('battery0_pwr_level').innerText = pwr + '%';
+                        document.getElementById("battery0_pwr_level_show").setAttribute("style", "width:calc(" + pwr + "% * 0.73)");
+                        document.getElementById("battery0_last_update").innerHTML = "Updated: " + obj.power[0].last_update + " ago";
+                        document.getElementById("battery0_state").innerHTML = obj.power[0].state;
+                        document.getElementById("battery0_errors").innerHTML = obj.power[0].errors;
+                    }
+
+                    console.log(obj.notifications);
+
+
+                    $(".progress").each(function () {
+                        var value = $(this).attr('data-value');
+                        var left = $(this).find('.progress-left .progress-bar');
+                        var right = $(this).find('.progress-right .progress-bar');
+
+                        if (value > 0) {
+                            if (value <= 50) {
+                                right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                            } else {
+                                right.css('transform', 'rotate(180deg)')
+                                left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                            }
+                        }
+
+                    })
+
+                    function percentageToDegrees(percentage) {
+                        return percentage / 100 * 360
+                    }
+
                 };
 
                 ws.onclose = function () {
@@ -97,15 +208,10 @@
                 };
 
                 setInterval(function () { ws.send("Hello server"); console.log("hello"); }, 2000);
+
             };
         });
-        /*var cnt = 1;
 
-        function refreshData(ws) {
-            ws.send("Hello server");
-            console.log(cnt += 1);
-        };
-        setInterval(refreshData, 2000);*/
     </script>
 
 
@@ -135,19 +241,14 @@
         <div class="tab-content">
             <div id="home" class="tab-pane fade in active">
                 <br>
-                <p style="text-align:center;"><font size="4">System messages are shown in this space</font></p>
-                <div class="alert alert-success">
-                    <strong>Success!</strong> This alert box could indicate a successful or positive action.
-                </div>
-                <div class="alert alert-info">
-                    <strong>Info!</strong> This alert box could indicate a neutral informative change or action.
-                </div>
-                <div class="alert alert-warning">
-                    <strong>Warning!</strong> This alert box could indicate a warning that might need attention.
-                </div>
-                <div class="alert alert-danger">
-                    <strong>Danger!</strong> This alert box could indicate a dangerous or potentially negative action.
-                </div>
+                <ul class="list-group" id="notifications_list">
+                    <li><div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Warning!</strong> You should check in on some of those fields below.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div></li>
+                </ul>
             </div>
             <div id="irrigation" class="tab-pane fade">
                 <br>
@@ -254,7 +355,7 @@
                                 <div class="row mt-4">
                                     <div class="col-12">
                                         <!--Progress bar-->
-                                        <div class="progress mx-auto" data-value='10'>
+                                        <div class="progress mx-auto" id="watertank0_level_data_value" data-value='10'>
                                             <span class="progress-left">
                                                 <span class="progress-bar border-primary"></span>
                                             </span>
@@ -262,7 +363,7 @@
                                                 <span class="progress-bar border-primary"></span>
                                             </span>
                                             <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                                <div class="h2 font-weight-bold">10<sup class="small">%</sup></div>
+                                                <div class="h2 font-weight-bold" id="watertank0_level_text">10<sup class="small">%</sup></div>
                                             </div>
                                         </div>
                                     </div>
@@ -275,12 +376,12 @@
                                 </div>
                                 <div class="row mt-4">
                                         <div class="col-12 text-left">
-                                            <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                            <div class="h6 mb-0">Errors</div><span class="small text-gray" id="watertank0_errors">errors</span>
                                         </div>
                                 </div>
                             </p>
                         </div>
-                        <div class="card-footer">Updated: 10s ago</div>
+                        <div class="card-footer" id="watertank0_last_update">Updated: never</div>
                     </div>
                 </div>
             </div>
@@ -293,7 +394,7 @@
                                 <h5 class="card-title">Channel 1</h5>
                                 <p class="card-text">
                                     <!--Progress bar-->
-                                    <div class="progress mx-auto" data-value='80'>
+                                    <div class="progress mx-auto" id="plant0_moisture_data_value" data-value='0'>
                                         <span class="progress-left">
                                             <span class="progress-bar border-primary"></span>
                                         </span>
@@ -301,28 +402,28 @@
                                             <span class="progress-bar border-primary"></span>
                                         </span>
                                         <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="h2 font-weight-bold">80<sup class="small">%</sup></div>
+                                            <div class="h2 font-weight-bold" id="plant0_moisture_text">0<sup class="small">%</sup></div>
                                         </div>
                                     </div>
                                     <!-- Demo info -->
                                     <div class="row text-center mt-4">
                                         <div class="col-6 border-right">
-                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray" id="plant0_name">plant0</span>
                                         </div>
                                         <div class="col-6">
-                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray" id="plant0_moisture">0%</span>
                                         </div>
                                     </div>
                                 </p>
                             </div>
-                            <div class="card-footer">Updated: 10s ago</div>
+                            <div class="card-footer" id="plant0_last_update">Updated: never</div>
                         </div>
                         <div class="card bg-light">
                             <div class="card-body">
                                 <h5 class="card-title">Channel 2</h5>
                                 <p class="card-text">
                                     <!--Progress bar-->
-                                    <div class="progress mx-auto" data-value='30'>
+                                    <div class="progress mx-auto" id="plant1_moisture_data_value" data-value='0'>
                                         <span class="progress-left">
                                             <span class="progress-bar border-primary"></span>
                                         </span>
@@ -330,28 +431,28 @@
                                             <span class="progress-bar border-primary"></span>
                                         </span>
                                         <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="h2 font-weight-bold">30<sup class="small">%</sup></div>
+                                            <div class="h2 font-weight-bold" id="plant1_moisture_text">0<sup class="small">%</sup></div>
                                         </div>
                                     </div>
                                     <!-- Demo info -->
                                     <div class="row text-center mt-4">
                                         <div class="col-6 border-right">
-                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray" id="plant1_name">plant1</span>
                                         </div>
                                         <div class="col-6">
-                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray" id="plant1_moisture">0%</span>
                                         </div>
                                     </div>
                                 </p>
                             </div>
-                            <div class="card-footer">Updated: 10s ago</div>
+                            <div class="card-footer" id="plant1_last_update">Updated: never</div>
                         </div>
                         <div class="card bg-light">
                             <div class="card-body">
                                 <h5 class="card-title">Channel 3</h5>
                                 <p class="card-text">
                                     <!--Progress bar-->
-                                    <div class="progress mx-auto" data-value='30'>
+                                    <div class="progress mx-auto" id="plant2_moisture_data_value" data-value='0'>
                                         <span class="progress-left">
                                             <span class="progress-bar border-primary"></span>
                                         </span>
@@ -359,28 +460,28 @@
                                             <span class="progress-bar border-primary"></span>
                                         </span>
                                         <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="h2 font-weight-bold">30<sup class="small">%</sup></div>
+                                            <div class="h2 font-weight-bold" id="plant2_moisture_text">0<sup class="small">%</sup></div>
                                         </div>
                                     </div>
                                     <!-- Demo info -->
                                     <div class="row text-center mt-4">
                                         <div class="col-6 border-right">
-                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray" id="plant2_name">plant2</span>
                                         </div>
                                         <div class="col-6">
-                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray" id="plant2_moisture">0%</span>
                                         </div>
                                     </div>
                                 </p>
                             </div>
-                            <div class="card-footer">Updated: 10s ago</div>
+                            <div class="card-footer" id="plant2_last_update">Updated: never</div>
                         </div>
                         <div class="card bg-light">
                             <div class="card-body">
                                 <h5 class="card-title">Channel 4</h5>
                                 <p class="card-text">
                                     <!--Progress bar-->
-                                    <div class="progress mx-auto" data-value='30'>
+                                    <div class="progress mx-auto" id="plant3_moisture_data_value" data-value='0'>
                                         <span class="progress-left">
                                             <span class="progress-bar border-primary"></span>
                                         </span>
@@ -388,28 +489,28 @@
                                             <span class="progress-bar border-primary"></span>
                                         </span>
                                         <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="h2 font-weight-bold">30<sup class="small">%</sup></div>
+                                            <div class="h2 font-weight-bold" id="plant3_moisture_text">0<sup class="small">%</sup></div>
                                         </div>
                                     </div>
                                     <!-- Demo info -->
                                     <div class="row text-center mt-4">
                                         <div class="col-6 border-right">
-                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray" id="plant3_name">plant3</span>
                                         </div>
                                         <div class="col-6">
-                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray" id="plant3_moisture">0%</span>
                                         </div>
                                     </div>
                                 </p>
                             </div>
-                            <div class="card-footer">Updated: 10s ago</div>
+                            <div class="card-footer" id="plant3_last_update">Updated: never</div>
                         </div>
                         <div class="card bg-light">
                             <div class="card-body">
                                 <h5 class="card-title">Channel 5</h5>
                                 <p class="card-text">
                                     <!--Progress bar-->
-                                    <div class="progress mx-auto" data-value='80'>
+                                    <div class="progress mx-auto" id="plant4_moisture_data_value" data-value='0'>
                                         <span class="progress-left">
                                             <span class="progress-bar border-primary"></span>
                                         </span>
@@ -417,28 +518,28 @@
                                             <span class="progress-bar border-primary"></span>
                                         </span>
                                         <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="h2 font-weight-bold">80<sup class="small">%</sup></div>
+                                            <div class="h2 font-weight-bold" id="plant4_moisture_text">0<sup class="small">%</sup></div>
                                         </div>
                                     </div>
                                     <!-- Demo info -->
                                     <div class="row text-center mt-4">
                                         <div class="col-6 border-right">
-                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray" id="plant4_name">plant4</span>
                                         </div>
                                         <div class="col-6">
-                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray" id="plant4_moisture">0%</span>
                                         </div>
                                     </div>
                                 </p>
                             </div>
-                            <div class="card-footer">Updated: 10s ago</div>
+                            <div class="card-footer" id="plant4_last_update">Updated: never</div>
                         </div>
                         <div class="card bg-light">
                             <div class="card-body">
                                 <h5 class="card-title">Channel 6</h5>
                                 <p class="card-text">
                                     <!--Progress bar-->
-                                    <div class="progress mx-auto" data-value='80'>
+                                    <div class="progress mx-auto" id="plant5_moisture_data_value" data-value='0'>
                                         <span class="progress-left">
                                             <span class="progress-bar border-primary"></span>
                                         </span>
@@ -446,28 +547,28 @@
                                             <span class="progress-bar border-primary"></span>
                                         </span>
                                         <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="h2 font-weight-bold">50<sup class="small">%</sup></div>
+                                            <div class="h2 font-weight-bold" id="plant5_moisture_text">0<sup class="small">%</sup></div>
                                         </div>
                                     </div>
                                     <!-- Demo info -->
                                     <div class="row text-center mt-4">
                                         <div class="col-6 border-right">
-                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray" id="plant5_name">plant5</span>
                                         </div>
                                         <div class="col-6">
-                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray" id="plant5_moisture">0%</span>
                                         </div>
                                     </div>
                                 </p>
                             </div>
-                            <div class="card-footer">Updated: 10s ago</div>
+                            <div class="card-footer" id="plant5_last_update">Updated: never</div>
                         </div>
                         <div class="card bg-light">
                             <div class="card-body">
                                 <h5 class="card-title">Channel 7</h5>
                                 <p class="card-text">
                                     <!--Progress bar-->
-                                    <div class="progress mx-auto" data-value='80'>
+                                    <div class="progress mx-auto" id="plant6_moisture_data_value" data-value='0'>
                                         <span class="progress-left">
                                             <span class="progress-bar border-primary"></span>
                                         </span>
@@ -475,28 +576,28 @@
                                             <span class="progress-bar border-primary"></span>
                                         </span>
                                         <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="h2 font-weight-bold">80<sup class="small">%</sup></div>
+                                            <div class="h2 font-weight-bold" id="plant6_moisture_text">0<sup class="small">%</sup></div>
                                         </div>
                                     </div>
                                     <!-- Demo info -->
                                     <div class="row text-center mt-4">
                                         <div class="col-6 border-right">
-                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray" id="plant6_name">plant6</span>
                                         </div>
                                         <div class="col-6">
-                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray" id="plant6_moisture">0%</span>
                                         </div>
                                     </div>
                                 </p>
                             </div>
-                            <div class="card-footer">Updated: 10s ago</div>
+                            <div class="card-footer" id="plant6_last_update">Updated: never</div>
                         </div>
                         <div class="card bg-light">
                             <div class="card-body">
                                 <h5 class="card-title">Channel 8</h5>
                                 <p class="card-text">
                                     <!--Progress bar-->
-                                    <div class="progress mx-auto" data-value='10'>
+                                    <div class="progress mx-auto" id="plant7_moisture_data_value" data-value='0'>
                                         <span class="progress-left">
                                             <span class="progress-bar border-primary"></span>
                                         </span>
@@ -504,21 +605,21 @@
                                             <span class="progress-bar border-primary"></span>
                                         </span>
                                         <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="h2 font-weight-bold">10<sup class="small">%</sup></div>
+                                            <div class="h2 font-weight-bold" id="plant7_moisture_text">0<sup class="small">%</sup></div>
                                         </div>
                                     </div>
                                     <!-- Demo info -->
                                     <div class="row text-center mt-4">
                                         <div class="col-6 border-right">
-                                            <div class="h6 mb-0">Plant</div><span class="small text-gray">Pelargonia</span>
+                                            <div class="h6 mb-0">Plant</div><span class="small text-gray" id="plant7_name">plant7</span>
                                         </div>
                                         <div class="col-6">
-                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray">60%</span>
+                                            <div class="h6 mb-0">Soil moisture</div><span class="small text-gray" id="plant7_moisture">0%</span>
                                         </div>
                                     </div>
                                 </p>
                             </div>
-                            <div class="card-footer">Updated: 10s ago</div>
+                            <div class="card-footer" id="plant7_last_update">Updated: never</div>
                         </div>
                     </div>
                 </div>
@@ -534,29 +635,30 @@
                                         <div class="row mt-4">
                                         <div class="col-12 text-center"> 
                                             <i class="fa fa-battery-empty font-90px fa-battery-filling" aria-hidden="true">
-                                                <span id="result" style="width:calc(10% * 0.73)"></span></i>
+                                                <span id="battery0_pwr_level_show" style="width:calc(10% * 0.73)"></span></i>
                                         </div>
                                         </div>
                                         <div class="row mt-4">
                                             <div class="col-6 text-center">
-                                            <div class="h6 mb-0">State</div><span class="small text-gray">{Charging}</span>
+                                            <div class="h6 mb-0">State</div><span class="small text-gray" id="battery0_state">Undetermined</span>
                                             </div>
                                             <div class="col-6 text-center">
-                                                <div class="h6 mb-0">Power level</div><span class="small text-gray">
-                                                    <p id="Battery1">
-                                                        90
+                                                <div class="h6 mb-0">Power level</div>
+                                                <span class="small text-gray">
+                                                    <p id="battery0_pwr_level">
+                                                        10%
                                                      </p>
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="row mt-4">
                                             <div class="col-12 text-center">
-                                                <div class="h6 mb-0">Errors</div><span class="small text-gray">{errors string}</span>
+                                                <div class="h6 mb-0">Errors</div><span class="small text-gray" id="battery0_errors">errors</span>
                                             </div>
                                         </div>
                                 </p>
                             </div>
-                            <div class="card-footer">Updated: 10s ago</div>
+                            <div class="card-footer" id="battery0_last_update">Updated: never</div>
                         </div>
                     </div>
                 </div>
