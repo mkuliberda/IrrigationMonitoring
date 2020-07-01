@@ -10,6 +10,10 @@
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Monday">
+            <time>12:00:00</time>
+            <duration>00:05:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Monday">
             <time>19:00:00</time>
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
@@ -26,6 +30,10 @@
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Tuesday">
+            <time>12:00:00</time>
+            <duration>00:05:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Tuesday">
             <time>19:00:00</time>
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
@@ -42,6 +50,10 @@
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Wednesday">
+            <time>12:00:00</time>
+            <duration>00:05:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Wednesday">
             <time>19:00:00</time>
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
@@ -58,6 +70,10 @@
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Thursday">
+            <time>12:00:00</time>
+            <duration>00:05:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Thursday">
             <time>19:00:00</time>
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
@@ -74,6 +90,10 @@
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Friday">
+            <time>12:00:00</time>
+            <duration>00:05:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Friday">
             <time>19:00:00</time>
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
@@ -90,6 +110,10 @@
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Saturday">
+            <time>12:00:00</time>
+            <duration>00:05:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Saturday">
             <time>19:00:00</time>
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
         </weekday>
@@ -104,6 +128,10 @@
         <weekday day="Sunday">
             <time>08:00:00</time>
             <duration>00:20:00</duration>            <!--hh:mm:ss-->
+        </weekday>
+        <weekday day="Sunday">
+            <time>12:00:00</time>
+            <duration>00:05:00</duration>            <!--hh:mm:ss-->
         </weekday>
         <weekday day="Sunday">
             <time>19:00:00</time>

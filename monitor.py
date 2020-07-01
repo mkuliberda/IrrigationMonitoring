@@ -191,19 +191,28 @@ class communicationsThread(threading.Thread):
                                 del irrigation_cmd
 
         def _send_avbl_messages(self):
+                break_cnt = 0
                 while len(self._outbound_msg_queue) > 0:
                         msg = self._outbound_msg_queue.pop()
                         if msg[3] == wireless.command_t.Start or msg[3] == wireless.command_t.Stop:  #only Start and Stop commmands are now enabled
                                 self._awaiting_confirmation_msg_queue.append(self._convert_cmd_to_dict(msg))
                         self._radio1.transmit_payload(msg)
                         while self._radio1.get_transmission_status() == wireless.NRF24L01_TransmitStatus.Sending:
-                                pass     
+                                print(break_cnt, "sending") #pass
+                                break_cnt += 1
+                                if (break_cnt > 1000):
+                                        break
                         print("command sent:", self._convert_cmd_to_dict(msg))
                         time.sleep(0.01)
                 self._radio1.power_up_rx()
+                break_cnt = 0
                 while self._radio1.get_status() != 14:
                         time.sleep(0.005)
                         self._radio1.power_up_rx()
+                        print(break_cnt, "radio != 14")
+                        break_cnt += 1
+                        if (break_cnt > 100):
+                                break
         
         def get_new_message_count(self):
                 return len(self._inbound_msg_queue)
@@ -275,7 +284,6 @@ if __name__ == "__main__":
                                         print(watertank.get_last_update(), watertank.get_type(), watertank.get_id(), "valid:", watertank.is_valid())
 
                         if irrigation_time_event.is_set():
-                                irrigation_time_event.clear()
                                 tasks = irrigation_scheduler.pick_tasks_from_queue()
                                 for task in tasks:
                                         outbound_msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
@@ -291,11 +299,11 @@ if __name__ == "__main__":
                                         wireless_link.add_msg_to_queue(tx_payload)
                                         del outbound_msg
                                         del irrigation_cmd
+                                irrigation_time_event.clear()
                         else:
                                 print("there's no irrigation event")
 
                         if get_status_event.is_set():
-                                get_status_event.clear()
                                 outbound_msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
                                 status_cmd = wireless.cmd_s()
                                 status_cmd.target = wireless.target_t.All
@@ -305,6 +313,7 @@ if __name__ == "__main__":
                                 wireless_link.add_msg_to_queue(tx_payload)
                                 del outbound_msg
                                 del status_cmd
+                                get_status_event.clear()
                         else:
                                 print("there's no new messages")
                         time.sleep(MONITOR_REFRESH_RATE_MS/1000)
@@ -317,17 +326,18 @@ if __name__ == "__main__":
         print("shutting down...")
 
         irrigation_scheduler.terminate()
-        irrigation_scheduler.join(5)
+        irrigation_scheduler.join()
         del irrigation_scheduler
         print("irrigation scheduler off!")
 
         wireless_link.terminate()
-        wireless_link.join(2)
+        wireless_link.join()
         del wireless_link
         print("wireless_link off!")
 
-        del status_checker
-        print("status_checker off!")
-
+        
+        #del status_checker
+        #print("status_checker off!")
         print("done, exiting...")
+        sys.exit()
 
