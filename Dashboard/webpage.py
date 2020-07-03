@@ -52,26 +52,4 @@ def index():
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=8082, debug=True)
 
-    #while True:
-    #    full_msg = ''
-    #    new_msg = True
-    #    while True:
-    #        msg = s.recv(16)
-    #        if new_msg:
-    #            print("new msg len:",msg[:4])
-    #            msglen = len(msg[:4])
-    #            new_msg = False
-
-    #        print(f"full message length: {msglen}")
-
-    #        full_msg += msg.decode("utf-8")
-
-    #        print(len(full_msg))
-
-    #        if len(full_msg)-4 == msglen:
-    #            print("full msg recvd")
-    #            print(full_msg[4:])
-    #            new_msg = True
-    #            full_msg = ""
-    #    time.sleep(5)
 
