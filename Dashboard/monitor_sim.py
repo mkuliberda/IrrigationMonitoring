@@ -2,6 +2,7 @@ import socket
 import json
 import time
 from websocket_server import WebsocketServer
+import threading
 
 
 sector = [{
@@ -105,10 +106,10 @@ plant = [{
 
 notification = []
 
-notification1 = {'type': 'Warning', 'timestamp': '202006301838', 'text': 'Just a simple warning'}
-notification2 = {'type': 'Success', 'timestamp': '202006301839', 'text': 'Just a simple success'}
-notification3 = {'type': 'Danger', 'timestamp': '202006301840', 'text': 'Just a simple danger'}
-notification4 = {'type': 'Info', 'timestamp': '202006301841', 'text': 'Just a simple info'}
+notification1 = {'type': 'warning', 'timestamp': '202006301838', 'text': 'Just a simple warning'}
+notification2 = {'type': 'success', 'timestamp': '202006301839', 'text': 'Just a simple success'}
+notification3 = {'type': 'danger', 'timestamp': '202006301840', 'text': 'Just a simple danger'}
+notification4 = {'type': 'info', 'timestamp': '202006301841', 'text': 'Just a simple info'}
 notification.append(notification1)
 notification.append(notification2)
 notification.append(notification3)
@@ -136,23 +137,7 @@ server = WebsocketServer(1234, host='127.0.0.1')
 server.set_fn_new_client(new_client)
 server.set_fn_message_received(new_msg)
 server.set_fn_client_left(client_left)
-server.run_forever()
 
-
-#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#print('binding')
-#s.bind((socket.gethostname(),1234))
-#s.listen(5)
-#print('1')
-
-
-#while True:
-#    clientsocket, address = s.accept()
-#    print(clientsocket, address)
-#    print("Connection from ", address, "has been established")
-#    msg = json.dumps({'sectors': sector, 'plants': plant, 'watertanks': watertank, 'power': battery})
-#    msg = '{:<4}'.format(str(len(msg))) + msg   
-#    clientsocket.send(bytes('hello', "utf-8"))
-#    clientsocket.close()
-
-
+server_thread = threading.Thread(name='server', target=server.run_forever)
+server_thread.daemon = True
+server_thread.start()

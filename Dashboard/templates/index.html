@@ -178,7 +178,14 @@
                         document.getElementById("battery0_errors").innerHTML = obj.power[0].errors;
                     }
 
-                    console.log(obj.notifications);
+                    for (var prop in obj.notifications) {
+                        document.getElementById('home').innerHTML += ('<div class="alert alert-' + obj.notifications[prop].type + ' alert-dismissible fade show" role="alert">' +
+                            '<strong>' + obj.notifications[prop].timestamp + ' </strong>' + obj.notifications[prop].text + 
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                            '<span aria-hidden="true" >&times;</span>' +
+                            '</button></div>');
+                    }
+                    
 
 
                     $(".progress").each(function () {
@@ -240,15 +247,6 @@
 
         <div class="tab-content">
             <div id="home" class="tab-pane fade in active">
-                <br>
-                <ul class="list-group" id="notifications_list">
-                    <li><div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <strong>Warning!</strong> You should check in on some of those fields below.
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div></li>
-                </ul>
             </div>
             <div id="irrigation" class="tab-pane fade">
                 <br>
