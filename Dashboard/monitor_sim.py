@@ -10,13 +10,13 @@ import sys
 
 logging.basicConfig(filename='irrigation.log', filemode='w', format='%(asctime)s-%(levelname)s-%(process)d-%(message)s', level=logging.INFO)
 
-try:
+'''try:
   c = 5 / 0
 except Exception as e:
-    logging.error(e, exc_info=True)
+    logging.error(e, exc_info=True)'''
 
 
-sector = [{
+sectors_dashboard = [{
     'type': 'sector',
     'last_update': '10s',
     'watering': True,
@@ -45,14 +45,14 @@ sector = [{
     'errors':''
     }]
 
-watertank = [{
+watertanks_dashboard = [{
     'type': 'tank',
     'last_update': '10min',
     'level': 50,
     'errors':''
     }]
 
-battery = [{
+batteries_dashboard = [{
     'type': 'power',
     'last_update': '14s',
     'level': 91,
@@ -60,7 +60,7 @@ battery = [{
     'errors': 'overvoltage'
     }]
 
-plant = [{
+plants_dashboard = [{
     'type':'plant',
     'last_update': '11s',
     'name': 'Ogorki',
@@ -115,6 +115,26 @@ plant = [{
     'soil_moisture': 19
     }]
 
+weather_dashboard = {
+    'city': 'undefined',
+    'temperature': -273.15,
+    'real_feel' : -273.15,
+    'humidity' : 0,
+    'description': 'unknown',
+    'icon': '',
+    'last_update': '1s'
+    }
+
+next_rain_dashboard = {
+    'city': 'undefined',
+    'time': '1990-01-01 00:00:00',
+    'real_feel': -273.15,
+    'description': 'unknown',
+    'icon': '',
+    'rain': 0,
+    'last_update': '2s'
+    }
+
 notification_archive = []
 notification = []
 i = 0
@@ -152,43 +172,171 @@ def notify(type='info', msg=''):
     else:
       print('notification type invalid!')
 
-def update_dicts(system):
+def update_dashboard_objects(system, weather):
     # Prepare data to send to website dict->json
     now = datetime.now()
     for id, plnt in enumerate(system.list_plants()):
         if plnt.get_last_update() != None:
-            plant[id].last_update = format_last_update(int((now - plnt.get_last_update()).total_seconds()))
-            plant[id].name = plnt.get_name()
-            plant[id].soil_moisture = plnt.get_health()
-        #print(plant.get_last_update(), plant.get_type(), plant.get_id(), "name:", plant.get_name(), "health:", plant.get_health())
+            plants_dashboard[id].last_update = format_last_update(int((now - plnt.get_last_update()).total_seconds()))
+            plants_dashboard[id].name = plnt.get_name()
+            plants_dashboard[id].soil_moisture = plnt.get_health()
+            
     for id, bat in enumerate(system.list_batteries()):
         if bat.get_last_update() != None:
-            battery[id].last_update = format_last_update(int((now - bat.get_last_update()).total_seconds()))
-            battery[id].level = bat.get_percentage()
-            battery[id].state = bat.get_state()
-            battery[id].errors = bat.list_errors() 
-        #print(battery.get_last_update(), battery.get_type(), battery.get_id(), battery.get_percentage(), "%", battery.get_state(), "errors:", battery.list_errors())
+            batteries_dashboard[id].last_update = format_last_update(int((now - bat.get_last_update()).total_seconds()))
+            batteries_dashboard[id].level = bat.get_percentage()
+            batteries_dashboard[id].state = bat.get_state()
+            batteries_dashboard[id].errors = bat.list_errors() 
+
     for id, sect in enumerate(system.list_sectors()):
         if sect.get_last_update() != None:
-            sector[id].last_update = format_last_update(int((now - sect.get_last_update()).total_seconds()))
-            sector[id].watering = is_watering()
-            sector[id].plants = list_plants()
-            sector[id].errors = list_errors()
-        #print(sector.get_last_update(), sector.get_type(), sector.get_id(), "watering:", sector.is_watering(), "plants:", sector.list_plants(), "errors:", sector.list_errors())
+            sectors_dashboard[id].last_update = format_last_update(int((now - sect.get_last_update()).total_seconds()))
+            sectors_dashboard[id].watering = sect.is_watering()
+            sectors_dashboard[id].plants = sect.list_plants()
+            sectors_dashboard[id].errors = sect.list_errors()
+
     for id, wtrtnk in enumerate(system.list_watertanks()):
         if wtrtnk.get_last_update() != None:
-            watertank[id].last_update = format_last_update(int((now - wtrtnk.get_last_update()).total_seconds()))
+            watertanks_dashboard[id].last_update = format_last_update(int((now - wtrtnk.get_last_update()).total_seconds()))
             if wtrtnk.is_valid():
-                watertank[id].level = 100
-                watertank[id].errors = ''
+                watertanks_dashboard[id].level = 100
+                watertanks_dashboard[id].errors = ''
             else:
-                watertank[id].level = 5
-                watertank[id].errors = 'empty'
-        #print(watertank.get_last_update(), watertank.get_type(), watertank.get_id(), "valid:", watertank.is_valid())
+                watertanks_dashboard[id].level = 5
+                watertanks_dashboard[id].errors = 'empty'
+                
+    if weather.get_current_weather()['last_update'] != None:
+        weather_dashboard.city = weather.get_current_weather()['city']
+        weather_dashboard.temperature = weather.get_current_weather()['temperature']
+        weather_dashboard.real_feel = weather.get_current_weather()['real_feel']
+        weather_dashboard.humidity = weather.get_current_weather()['humidity']
+        weather_dashboard.description = weather.get_current_weather()['description']
+        weather_dashboard.icon = weather.get_current_weather()['icon']
+        weather_dashboard.last_update = format_last_update(int((now - weather.get_current_weather()['last_update']).total_seconds()))
 
+    if weather.get_next_expected_rain()['last_update'] != None:
+        next_rain_dashboard.city = weather.get_next_expected_rain()['city']
+        next_rain_dashboard.time = weather.get_next_expected_rain()['time']
+        next_rain_dashboard.real_feel = weather.get_next_expected_rain()['real_feel']
+        next_rain_dashboard.description = weather.get_next_expected_rain()['description']
+        next_rain_dashboard.icon = weather.get_next_expected_rain()['icon']
+        next_rain_dashboard.rain = weather.get_next_expected_rain()['rain']
+        next_rain_dashboard.last_update = format_last_update(int((now - weather.get_next_expected_rain()['last_update']).total_seconds()))
+    
+
+class OpenWeatherMap():
+    def __init__(self, refresh_rate_s, city, weather_url, forecast_url):
+        #__weather_url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid=63f4d3e36c7caad4496f47edcea1bd23'
+        #__forecast_url = 'http://api.openweathermap.org/data/2.5/forecast?q={}&units=metric&appid=63f4d3e36c7caad4496f47edcea1bd23'
+        self.__weather_url = weather_url
+        self.__forecast_url = forecast_url
+        self.__forecast = None
+        self.__city = city
+        self.__is_running = True
+        self.__refresh_rate_s = refresh_rate_s
+        self.__rain_expected = False
+        self.__current_weather = {
+            'city': self.__city,
+            'temperature': -273.15,
+            'real_feel' : -273.15,
+            'humidity' : 0,
+            'description': 'unknown',
+            'icon': '',
+            'last_update': None
+        }
+        self.__forecast_3hr = {
+            'city': self.__city,
+            'time': '1990-01-01 00:00:00',
+            'real_feel': -273.15,
+            'description': 'unknown',
+            'icon': '',
+            'rain': 0,
+            'last_update': None
+        }
+        self.__next_rain = {
+            'city': self.__city,
+            'time': '1990-01-01 00:00:00',
+            'real_feel': -273.15,
+            'description': 'unknown',
+            'icon': '',
+            'rain': 0,
+            'last_update': None
+            }
+
+        def parse_data(self):
+
+            try:
+                curr = requests.get(weather_url.format(self.__city)).json()
+                self.__forecast = requests.get(forecast_url.format(self.__city)).json()
+
+                self.__current_weather = {
+                    'city': __city,
+                    'temperature': curr['main']['temp'],
+                    'real_feel' : curr['main']['feels_like'],
+                    'humidity' : curr['main']['humidity'],
+                    'description': curr['weather'][0]['description'],
+                    'icon': curr['weather'][0]['icon'],
+                    'last_update': datetime.now()
+                }
+
+                self.__forecast_3hr = {
+                    'city': __city,
+                    'time': self.__forecast['list'][1]['dt_txt'],
+                    'real_feel': self.__forecast['list'][1]['main']['feels_like'],
+                    'description': self.__forecast['list'][1]['weather'][0]['description'],
+                    'icon': self.__forecast['list'][1]['weather'][0]['icon'],
+                    'rain': self.__forecast['list'][i]['weather'][0]['main'],
+                    'last_update': datetime.now()
+                }
+                return True
+            
+            except:
+                return False
+
+        def find_next_expected_rain(self):
+            for i in range(30):
+                if self.__forecast['list'][i]['weather'][0]['main'] == 'Rain':
+                    self.__next_rain['time'] = self.__forecast['list'][i]['dt_txt']
+                    self.__next_rain['description'] = self.__forecast['list'][i]['weather'][0]['description']
+                    self.__next_rain['icon'] = self.__forecast['list'][i]['weather'][0]['icon']
+                    self.__next_rain['rain'] = self.__forecast['list'][i]['rain']['3h']
+                    self.__next_rain['real_feel'] = self.__forecast['list'][i]['main']['feels_like']
+                    self.__next_rain['last_update'] = datetime.now()
+                    return True
+                else:
+                    return False
+        
+        def run(self):
+
+            while self.__is_running:
+                
+                if self.parse_data():
+                    if self.find_next_expected_rain():
+                        self.__rain_expected = True
+                    else:
+                        self.__rain_expected = False
+                    
+                time.sleep(__refresh_rate_s)
+
+        def terminate(self):
+            self.__is_running = False
+
+        def get_current_weather(self):
+            return self.__current_weather
+
+        def get_forecast_next3h(self):
+            return self.__forecast_3hr
+
+        def get_next_expected_rain(self):
+            if self.__rain_expected:
+                return self.__next_rain
+            else:
+                return {'city': self.__city, 'time': '0000-00-00 00:00:00', 'real_feel': -273.15, 'description': 'no rain expected in nearest future', 'icon': '', 'rain': 0, 'last_update': format_last_update(int((now - wtrtnk.get_last_update()).total_seconds()))}
+            
+    
 def new_client(client, server):
     global notification_archive
-    msg = json.dumps({'sectors': sector, 'plants': plant, 'watertanks': watertank, 'power': battery, 'notifications': notification_archive})
+    msg = json.dumps({'sectors': sectors_dashboard, 'plants': plants_dashboard, 'watertanks': watertanks_dashboard, 'power': batteries_dashboard, 'notifications': notification_archive, 'weather': weather_dashboard, 'next_rain': next_rain_dashboard})
     server.send_message(client, msg)
     print("new client: ", client['address']," joined")
 
@@ -200,7 +348,7 @@ def new_msg(client, server, message):
     i=i+1
     notify('success',str(i))
     
-    msg = json.dumps({'sectors': sector, 'plants': plant, 'watertanks': watertank, 'power': battery, 'notifications': notification})
+    msg = json.dumps({'sectors': sectors_dashboard, 'plants': plants_dashboard, 'watertanks': watertanks_dashboard, 'power': batteries_dashboard, 'notifications': notification, 'weather': weather_dashboard, 'next_rain': next_rain_dashboard})
     server.send_message_to_all(msg)
     
     notification_archive.extend(notification)
@@ -212,6 +360,7 @@ def new_msg(client, server, message):
 
 def client_left(client, server):
     print("client: ", client['address']," left")
+
 
 if __name__ == "__main__":
 
