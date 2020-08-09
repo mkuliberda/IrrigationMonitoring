@@ -23,12 +23,6 @@ SCHEDULE_REFRESH_RATE_MS = 1000
 
 MONITOR_REFRESH_RATE_MS = 1000
 
-lock = threading.RLock()
-
-message_received_event = threading.Event()
-get_status_event = threading.Event()
-irrigation_time_event = threading.Event()
-
 
 class schedulingThread(threading.Thread):
         def __init__(self, schedules, refresh_rate_ms=1000):
@@ -96,7 +90,8 @@ class communicationsThread(threading.Thread):
                         self._running = False
                         print("configuration of radio1 failed, terminating thread...")
                 self._comm_lost_event = threading.Event()
-                self._new_message_event = threading.Event()               
+                self._new_message_event = threading.Event()
+                self._lock = threading.RLock()
                 threading.Thread.__init__(self)
 
         def terminate(self):
@@ -114,22 +109,26 @@ class communicationsThread(threading.Thread):
                                         msg = wireless.IrrigationMessage(wireless.direction_t.from_irm_to_rpi)
                                         msg.set_buffer(payload, RADIO1_PAYLOAD_SIZE)
                                         if msg.validate_crc():
-                                                message_dict = msg.decode_message()
-                                                if message_dict["object"] == wireless.target_t.Sector:
-                                                        if message_dict["watering_active"] == False:
-                                                                for aw_confirmation_dict in list(self._awaiting_confirmation_msg_queue):
-                                                                        if aw_confirmation_dict["cmd"] == wireless.command_t.Stop and aw_confirmation_dict["target_id"] == message_dict["id"]:
-                                                                                self._awaiting_confirmation_msg_queue.remove(aw_confirmation_dict)
-                                                                                print("Removed:", aw_confirmation_dict)
-                                                        if message_dict["watering_active"] == True:
-                                                                for aw_confirmation_dict in list(self._awaiting_confirmation_msg_queue):
-                                                                        if aw_confirmation_dict["cmd"] == wireless.command_t.Start and aw_confirmation_dict["target_id"] == message_dict["id"]:
-                                                                                self._awaiting_confirmation_msg_queue.remove(aw_confirmation_dict)
-                                                                                print("Removed:", aw_confirmation_dict)
-                                                #check msg if cmd retry can be cleared
-                                                self._inbound_msg_queue.append(message_dict)
-                                                self._new_message_event.set()
-                                                #print("valid msg received:", message_dict)
+                                                try:
+                                                        message_dict = msg.decode_message()
+                                                        if message_dict["object"] == wireless.target_t.Sector:
+                                                                if message_dict["watering_active"] == False:
+                                                                        for aw_confirmation_dict in list(self._awaiting_confirmation_msg_queue):
+                                                                                if aw_confirmation_dict["cmd"] == wireless.command_t.Stop and aw_confirmation_dict["target_id"] == message_dict["id"]:
+                                                                                        self._awaiting_confirmation_msg_queue.remove(aw_confirmation_dict)
+                                                                                        print("Removed:", aw_confirmation_dict)
+                                                                if message_dict["watering_active"] == True:
+                                                                        for aw_confirmation_dict in list(self._awaiting_confirmation_msg_queue):
+                                                                                if aw_confirmation_dict["cmd"] == wireless.command_t.Start and aw_confirmation_dict["target_id"] == message_dict["id"]:
+                                                                                        self._awaiting_confirmation_msg_queue.remove(aw_confirmation_dict)
+                                                                                        print("Removed:", aw_confirmation_dict)
+                                                        #check msg if cmd retry can be cleared
+                                                        with self._lock:                                
+                                                                self._inbound_msg_queue.append(message_dict)
+                                                        self._new_message_event.set()
+                                                        #print("valid msg received:", message_dict)
+                                                except:
+                                                        print("msg decode error")
                                         else:
                                                 print("crc error")
                                         del msg
@@ -155,20 +154,8 @@ class communicationsThread(threading.Thread):
                         self._send_avbl_messages()
                         time.sleep(self._refresh_rate_s)
 
-        def configure_comm_lost_event(self, event):
-                self._comm_lost_event = event
-
-        def configure_new_message_event(self, event):
-                self._new_message_event = event
-        
-        def get_awaiting_confirmation_msg_queue(self):
-                return self._awaiting_confirmation_msg_queue
-
         def _convert_cmd_to_dict(self, _cmd):
                 return {'target': _cmd[1], 'target_id': _cmd[2], 'cmd': _cmd[3], 'subcmd1': 0, 'subcmd2': 0}
-
-        def add_msg_to_queue(self, payload):
-                self._outbound_msg_queue.append(payload)
 
         def _command_retry(self): 
         
@@ -185,7 +172,8 @@ class communicationsThread(threading.Thread):
                                 irrigation_cmd.target_id = msg_dict['target_id']
                                 irrigation_cmd.cmd = wireless.command_t(msg_dict['cmd'])
                                 payload = outbound_msg.encode_cmd(irrigation_cmd)
-                                self._outbound_msg_queue.append(payload)
+                                with self._lock:
+                                        self._outbound_msg_queue.append(payload)
                                 print("command retry:", payload)
                                 del outbound_msg
                                 del irrigation_cmd
@@ -193,7 +181,8 @@ class communicationsThread(threading.Thread):
         def _send_avbl_messages(self):
                 break_cnt = 0
                 while len(self._outbound_msg_queue) > 0:
-                        msg = self._outbound_msg_queue.pop()
+                        with self._lock:
+                                msg = self._outbound_msg_queue.pop()
                         if msg[3] == wireless.command_t.Start or msg[3] == wireless.command_t.Stop:  #only Start and Stop commmands are now enabled
                                 self._awaiting_confirmation_msg_queue.append(self._convert_cmd_to_dict(msg))
                         self._radio1.transmit_payload(msg)
@@ -213,21 +202,45 @@ class communicationsThread(threading.Thread):
                         break_cnt += 1
                         if (break_cnt > 100):
                                 break
+                        
+        def configure_comm_lost_event(self, event):
+                self._comm_lost_event = event
+
+        def configure_new_message_event(self, event):
+                self._new_message_event = event
+
+        def configure_lock(self, lock):
+                self._lock = lock
         
+        def get_awaiting_confirmation_msg_queue(self):
+                return self._awaiting_confirmation_msg_queue
+
         def get_new_message_count(self):
-                return len(self._inbound_msg_queue)
+                with self._lock:
+                        return len(self._inbound_msg_queue)
 
         def retreive_new_message(self):
-                return self._inbound_msg_queue.pop()
+                with self._lock:
+                        return self._inbound_msg_queue.pop()
+
+        def add_msg_to_queue(self, payload):
+                with self._lock:
+                        self._outbound_msg_queue.append(payload)
 
 def get_status(event):
         while True:
+                print("get status...")
                 event.set()
                 time.sleep(10)    
 
 
 if __name__ == "__main__":
         print(sys.version)
+
+        rlock = threading.RLock()
+        message_received_event = threading.Event()
+        get_status_event = threading.Event()
+        irrigation_time_event = threading.Event()
 
         print("Building custom system...")
         director = builder.Director()
@@ -248,6 +261,7 @@ if __name__ == "__main__":
                                                 wireless.NRF24L01_DataRate.R250kbps,
                                                 RADIO1_MY_ADDRESS, RADIO1_TX_ADDRESS,
                                                 COMMS_REFRESH_RATE_MS)
+        wireless_link.configure_lock(rlock)
         wireless_link.configure_new_message_event(message_received_event)
         wireless_link.start()
 
@@ -257,7 +271,38 @@ if __name__ == "__main__":
 
         try:
                 while True:
-                        if message_received_event.is_set():
+                        
+                        if get_status_event.wait(timeout=0.1):
+                                get_status_event.clear()
+                                outbound_msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
+                                status_cmd = wireless.cmd_s()
+                                status_cmd.target = wireless.target_t.All
+                                status_cmd.target_id = 0
+                                status_cmd.cmd = wireless.command_t.GetStatus
+                                tx_payload = outbound_msg.encode_cmd(status_cmd)
+                                wireless_link.add_msg_to_queue(tx_payload)
+                                del outbound_msg
+                                del status_cmd
+
+                        if irrigation_time_event.wait(timeout=0.1):
+                                irrigation_time_event.clear()
+                                tasks = irrigation_scheduler.pick_tasks_from_queue()
+                                for task in tasks:
+                                        outbound_msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
+                                        irrigation_cmd = wireless.cmd_s()
+                                        irrigation_cmd.target = wireless.target_t.Sector
+                                        irrigation_cmd.target_id = int(re.findall(r'\d+',str(list(task.keys())[0]))[0])
+                                        if list(task.values())[0]: 
+                                                irrigation_cmd.cmd = wireless.command_t.Start
+                                                tx_payload = outbound_msg.encode_cmd(irrigation_cmd)
+                                        else:
+                                                irrigation_cmd.cmd = wireless.command_t.Stop
+                                                tx_payload = outbound_msg.encode_cmd(irrigation_cmd)
+                                        wireless_link.add_msg_to_queue(tx_payload)
+                                        del outbound_msg
+                                        del irrigation_cmd
+                                
+                        if message_received_event.wait(timeout=0.02):
                                 message_received_event.clear()
                                 while wireless_link.get_new_message_count() > 0:
                                         msg = wireless_link.retreive_new_message()
@@ -282,41 +327,6 @@ if __name__ == "__main__":
                                         print(sector.get_last_update(), sector.get_type(), sector.get_id(), "watering:", sector.is_watering(), "plants:", sector.list_plants(), "errors:", sector.list_errors())
                                 for watertank in system1.list_watertanks():
                                         print(watertank.get_last_update(), watertank.get_type(), watertank.get_id(), "valid:", watertank.is_valid())
-
-                        if irrigation_time_event.is_set():
-                                tasks = irrigation_scheduler.pick_tasks_from_queue()
-                                for task in tasks:
-                                        outbound_msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
-                                        irrigation_cmd = wireless.cmd_s()
-                                        irrigation_cmd.target = wireless.target_t.Sector
-                                        irrigation_cmd.target_id = int(re.findall(r'\d+',str(list(task.keys())[0]))[0])
-                                        if list(task.values())[0]: 
-                                                irrigation_cmd.cmd = wireless.command_t.Start
-                                                tx_payload = outbound_msg.encode_cmd(irrigation_cmd)
-                                        else:
-                                                irrigation_cmd.cmd = wireless.command_t.Stop
-                                                tx_payload = outbound_msg.encode_cmd(irrigation_cmd)
-                                        wireless_link.add_msg_to_queue(tx_payload)
-                                        del outbound_msg
-                                        del irrigation_cmd
-                                irrigation_time_event.clear()
-                        else:
-                                print("there's no irrigation event")
-
-                        if get_status_event.is_set():
-                                outbound_msg = wireless.IrrigationMessage(wireless.direction_t.from_rpi_to_irm)
-                                status_cmd = wireless.cmd_s()
-                                status_cmd.target = wireless.target_t.All
-                                status_cmd.target_id = 0
-                                status_cmd.cmd = wireless.command_t.GetStatus
-                                tx_payload = outbound_msg.encode_cmd(status_cmd)
-                                wireless_link.add_msg_to_queue(tx_payload)
-                                del outbound_msg
-                                del status_cmd
-                                get_status_event.clear()
-                        else:
-                                print("there's no new messages")
-                        time.sleep(MONITOR_REFRESH_RATE_MS/1000)
 
                         
         except KeyboardInterrupt:
